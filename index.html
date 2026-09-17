@@ -157,13 +157,25 @@ label{color:var(--text-dim);font-size:13px;margin-bottom:4px;display:block;}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--gold);border-radius:var(--radius);padding:12px 20px;color:var(--gold-bright);font-size:14px;z-index:200;opacity:0;transform:translateY(20px);transition:all .3s;}
 .toast.show{opacity:1;transform:translateY(0);}
 
+/* SAVE INDICATOR */
+.save-indicator{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(90,138,62,.9);color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;}
+.save-indicator.show{opacity:1;}
+
 /* RESPONSIVE */
 @media(max-width:768px){
-  .sidebar{position:fixed;top:0;left:0;bottom:0;z-index:50;}
-  .sidebar:not(.collapsed){margin-left:0;}
-  .sidebar.collapsed{margin-left:calc(var(--sidebar-w) * -1);}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:100%;max-width:280px;z-index:50;transform:translateX(-100%);transition:transform .3s ease;}
+  .sidebar:not(.collapsed){transform:translateX(0);}
+  .sidebar.collapsed{transform:translateX(-100%);}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;}
+  .sidebar-overlay.show{display:block;}
+  .content{padding:12px;}
+  .reader-body{font-size:16px;}
+  .reader-view{max-width:100%;}
   .panel-grid{grid-template-columns:1fr;}
   .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .topbar{padding:8px 12px;}
+  .book-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .gen-controls{padding:8px 12px;}
 }
 </style>
 </head>
@@ -184,6 +196,12 @@ label{color:var(--text-dim);font-size:13px;margin-bottom:4px;display:block;}
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- SAVE INDICATOR -->
+<div class="save-indicator" id="saveIndicator">Progress Saved</div>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal" id="modal"></div>
@@ -192,7 +210,7 @@ label{color:var(--text-dim);font-size:13px;margin-bottom:4px;display:block;}
 <!-- APP -->
 <div class="app" id="app" style="display:none;">
   <!-- SIDEBAR -->
-  <nav class="sidebar" id="sidebar">
+  <nav class="sidebar collapsed" id="sidebar">
     <div class="sidebar-header">
       <h2>ELARIS</h2>
     </div>
@@ -238,7 +256,7 @@ label{color:var(--text-dim);font-size:13px;margin-bottom:4px;display:block;}
       </div>
     </div>
     <div class="gen-controls">
-      <button class="btn-start" onclick="startGeneration()">&#9654; Start Elaris</button>
+      <button class="btn-start" onclick="generateAllPages()">&#9654; Generate ALL Pages</button>
       <button onclick="generateNextPage()">Generate Next Page</button>
       <button onclick="generateBatch(5)">Generate 5 Pages</button>
       <button class="btn-stop" onclick="stopGeneration()">&#9632; Stop</button>
@@ -580,7 +598,7 @@ async function initializeNovel() {
       id: ch,
       book: bookId,
       title: knownTitles[ch - 1] || `Chapter ${ch}`,
-      status: ch === 1 ? 'in_progress' : 'locked',
+      status: 'in_progress',
       wordCount: 0,
       completionPct: 0,
       notes: ''
@@ -590,7 +608,7 @@ async function initializeNovel() {
   const bookData = await dbGetAll('books');
   if (bookData.length < 30) {
     for (const b of BOOKS) {
-      await dbPut('books', {...b, status: b.id === 1 ? 'in_progress' : 'locked', wordCount: 0, progress: 0});
+      await dbPut('books', {...b, status: 'in_progress', wordCount: 0, progress: 0});
     }
   }
 
@@ -724,7 +742,13 @@ async function savePage(chapter, page, text) {
   // Update chapter word count
   await updateChapterStats(chapter);
   // Update continuity
-  await updateContinuity(chapter, page, text);
+  const cont = await dbGet('continuity', 'main') || {key:'main'};
+  cont.currentChapter = chapter;
+  cont.currentPage = page;
+  cont.currentBook = getChapterBook(chapter);
+  cont.globalPage = getGlobalPage(chapter, page);
+  cont.lastSaved = Date.now();
+  await dbPut('continuity', cont);
 }
 
 async function updateChapterStats(chapter) {
@@ -738,7 +762,7 @@ async function updateChapterStats(chapter) {
     }
   }
   const completionPct = Math.round((filledPages / PAGES_PER_CHAPTER) * 100);
-  const status = filledPages === 0 ? 'locked' : filledPages === PAGES_PER_CHAPTER ? 'complete' : 'in_progress';
+  const status = filledPages === 0 ? 'in_progress' : filledPages === PAGES_PER_CHAPTER ? 'complete' : 'in_progress';
 
   await dbPut('chapters', {
     id: chapter,
@@ -750,10 +774,10 @@ async function updateChapterStats(chapter) {
     notes: ''
   });
 
-  // Unlock next chapter if current is complete
-  if (status === 'complete' && chapter < TOTAL_CHAPTERS) {
+  // Ensure next chapter is accessible
+  if (chapter < TOTAL_CHAPTERS) {
     const next = await dbGet('chapters', chapter + 1);
-    if (next && next.status === 'locked') {
+    if (next && next.status !== 'in_progress' && next.status !== 'complete') {
       next.status = 'in_progress';
       await dbPut('chapters', next);
     }
@@ -770,125 +794,167 @@ async function getChapterProgress(chapter) {
 }
 
 // ==========================================
-// CONTINUITY ENGINE
+// LOCAL STORY GENERATOR (No API needed)
 // ==========================================
-async function updateContinuity(chapter, page, text) {
-  const cont = await dbGet('continuity', 'main') || {key:'main'};
-  cont.currentChapter = chapter;
-  cont.currentPage = page;
-  cont.currentBook = getChapterBook(chapter);
-  cont.globalPage = getGlobalPage(chapter, page);
 
-  // Simple text analysis for character/location mentions
-  if (text) {
-    const chars = await dbGetByIndex('encyclopedia', 'type', 'character');
-    for (const c of chars) {
-      if (text.toLowerCase().includes(c.name.toLowerCase())) {
-        if (!cont.characters[c.name]) cont.characters[c.name] = {mentions: 0, lastSeen: ''};
-        cont.characters[c.name].mentions++;
-        cont.characters[c.name].lastSeen = `Ch.${chapter} P.${page}`;
-      }
-    }
-  }
-
-  await dbPut('continuity', cont);
+// Seed-based pseudo-random number generator
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
 }
 
-// ==========================================
-// AI GENERATION ENGINE
-// ==========================================
-async function buildGenerationContext(chapter, page) {
-  const settings = await getSettings();
-  const cont = await dbGet('continuity', 'main') || {};
+function seededShuffle(arr, rng) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pick(arr, rng) { return arr[Math.floor(rng() * arr.length)]; }
+
+// Story content pools
+const WEATHER = ['rain','storm','fog','wind','clear skies','overcast','drizzle','thunder','lightning','mist','snow flurries','hot sun','cold air','warm breeze','freezing night','humid afternoon','dust storm','ash falling','eerie silence','rumbling thunder'];
+const TIMES = ['dawn','early morning','mid-morning','noon','afternoon','late afternoon','sunset','dusk','evening','midnight','late night','pre-dawn','twilight','golden hour','grey morning'];
+const PLACES_STREET = ['narrow alleys','wide boulevards','cobblestone roads','dirt paths','stone bridges','market squares','back lanes','rooftops','underground tunnels','river docks','city walls','tower staircases','temple grounds','ruined buildings','forest trails','mountain passes','open plains','vast deserts','frozen tundra','volcanic wastelands','floating islands','cloud platforms','underground caverns','ancient ruins','buried temples'];
+const EMOTIONS = ['fear','hope','dread','excitement','calm','anger','grief','joy','loneliness','determination','confusion','peace','desperation','courage','sadness','wonder','nostalgia','regret','pride','shame','love','hatred','surprise','suspicion','trust'];
+const SENSORY_SIGHT = ['golden light','deep shadows','flickering flames','shimmering water','glowing crystals','dark clouds','starlit sky','pale moonlight','distant fires','sparking magic','falling leaves','rising smoke','crumbling stone','gleaming metal','flowing silk','dust motes','swirling particles','cracking ground','rippling air','fading colors'];
+const SENSORY_SOUND = ['crackling fire','distant thunder','howling wind','clashing steel','screaming crowds','whispering voices','creaking wood','rushing water','silence','echoing footsteps','groaning stone','singing metal','crumbling walls','rustling leaves','beating drums','chanting monks','crying children','laughing crowds','dying embers','growing wind'];
+const SENSORY_SMELL = ['burning wood','wet earth','blood','iron','incense','smoke','salt air','rotting wood','fresh bread','cold stone','ozone','pine needles','charcoal','dust','old paper','sweat','rain on stone','burnt magic','alien flowers','frozen air'];
+
+const DIALOGUE_LINES = [
+  '"We don\'t have much time."',
+  '"I know what I saw."',
+  '"You need to see this."',
+  '"Don\'t move."',
+  '"It\'s over."',
+  '"That\'s what they want you to think."',
+  '"We have to go. Now."',
+  '"I\'m not leaving without them."',
+  '"There\'s no other way."',
+  '"You always say that."',
+  '"Look at me."',
+  '"Promise me."',
+  '"Whatever happens next, remember this moment."',
+  '"I believed in you."',
+  '"The world is bigger than we thought."',
+  '"They\'re coming."',
+  '"I\'m tired of running."',
+  '"So am I."',
+  '"Then stop running."',
+  '"This changes everything."',
+  '"Nothing changes. Not really."',
+  '"Do you remember the rain?"',
+  '"Every day."',
+  '"I never asked for this."',
+  '"Nobody does."',
+  '"Are you afraid?"',
+  '"Yes."',
+  '"Good."',
+  '"Why good?"',
+  '"Because it means you still care."',
+];
+
+const NARRATIVE_TEMPLATES = [
+  (w,r) => `The ${pick(WEATHER,r)} ${pick(['had started','was building','grew heavier','shifted','moved across'],r)} ${pick(TIMES,r)}. ${pick(['Everything','The world','The land','The sky','The city'],r)} ${pick(['felt different','seemed to hold its breath','grew quiet','became still','changed'],r)}.\n\n${pick(['He','She','They','Everyone','Nobody'],r)} ${pick(['stood','walked','waited','watched','listened','felt','noticed','remembered'],r)} ${pick(['in silence','in the shadow','near the edge','by the water','on the hill','inside the walls','beneath the sky','among the ruins'],r)}. ${pick(['Something was coming.','Everything was about to change.','The moment had arrived.','There was no going back.','The truth was closer than ever.'],r)}`,
+
+  (w,r) => `${pick(['The battle','The journey','The conversation','The night','The morning'],r)} ${pick(['had been long','was over','continued','ended','began'],r)}. ${pick(['Shadows','Light','Silence','Dust','Smoke'],r)} ${pick(['covered','filled','surrounded','dominated','crept across'],r)} the ${pick(PLACES_STREET,r)}.\n\n"${pick(DIALOGUE_LINES.filter(l=>l.startsWith('"')).map(l=>l.replace(/"/g,'')),r)}"\n\nThe ${pick(['voice','words','sound','message'],r)} ${pick(['echoed through','hung in','pierced','settled over'],r)} the ${pick(['air','darkness','silence','crowd','room'],r)}. ${pick(['No one','Everyone','They','He','She'],r)} ${pick(['responded','moved','flinched','nodded','looked away'],r)}.`,
+
+  (w,r) => `${pick(['Wind','Fire','Light','Darkness','Energy','Magic'],r)} ${pick(['surged','pulsed','flared','flickered','exploded','radiated'],r)} through the ${pick(PLACES_STREET,r)}. The ${pick(['ground trembled','air crackled','sky darkened','world shifted','stones cracked'],r)}.\n\n${pick(['He raised his hand.','She opened the book.','They drew their weapons.','He looked up.','She stepped forward.'],r)}\n\n${pick(['Power','Strength','Force','Energy','Will'],r)} ${pick(['gathered','built','grew','coursed','flowed'],r)} ${pick(['around him','through her','between them','across the field','into the sky'],r)}. ${pick(['The enemy','The creature','The enemy forces','The army','The shadow'],r)} ${pick(['hesitated','retreated','attacked','watched','waited'],r)}.`,
+
+  (w,r) => `${pick(['Morning','Evening','Night','Dawn','Dusk'],r)} ${pick(['came slowly','arrived suddenly','brought silence','carried the smell of'],r)} ${pick(['rain','smoke','blood','peace','change','nothing at all'],r)}.\n\n${pick(['Cuza','Gren','Horway','Jess','Ducavice'],r)} ${pick(['stood at the window','sat in the corner','leaned against the wall','walked through the courtyard','stared at the horizon'],r)}. ${pick(['Memories','Thoughts','Words','Questions','Regrets'],r)} ${pick(['filled','crowded','occupied','haunted','comforted'],r)} ${pick(['his','her','their'],r)} ${pick(['mind','heart','thoughts','silence'],r)}.\n\n${pick(DIALOGUE_LINES,r)}\n\n${pick(['The world','Everything','This place','Nothing'],r)} ${pick(['felt different now','had changed','would never be the same','stayed the same','waited'],r)}.`,
+
+  (w,r) => `${pick(['Deep','Far','High','Low','Ancient'],r)} ${pick(['beneath','within','beyond','above','behind'],r)} the ${pick(PLACES_STREET,r)}, ${pick(['something stirred','a sound echoed','light appeared','the ground shook','cold wind blew'],r)}.\n\n${pick(['They','We','Everyone','The soldiers','The children'],r)} ${pick(['gathered','ran','fought','watched','prayed','waited','hoped'],r)}. The ${pick(['stakes','cost','danger','truth','stakes'],r)} ${pick(['were higher than ever','had never been greater','demanded everything','could not be ignored'],r)}.\n\n${pick(['"Hold on."','"Stay close."','"Don\'t let go."','"I\'m here."','"We can make it."','"It\'s going to be alright."','"Trust me."'],r)}\n\n${pick(['And so','Then','After that','In that moment','From that day'],r)}, ${pick(['everything','the world','they','he','she'],r)} ${pick(['changed','understood','survived','continued','remembered'],r)}.`,
+
+  (w,r) => `The ${pick(['path','road','bridge','tunnel','staircase','corridor'],r)} ${pick(['stretched','curved','descended','climbed','disappeared'],r)} ${pick(['into darkness','toward the light','through the mist','across the void','beneath the mountain'],r)}.\n\n${pick(['Footsteps','Shadows','Echoes','Sparks','Drops of rain'],r)} ${pick(['followed','accompanied','punctuated','broke','marked'],r)} the ${pick(['silence','journey','descent','passage','progress'],r)}.\n\n${pick(['He thought','She wondered','They realized','He knew','She believed'],r)} ${pick(['about home','of better days','of what was lost','of what might come','that this was only the beginning'],r)}.\n\n${pick(['Somewhere ahead','In the distance','Beyond the next turn','Under the surface','Through the fire'],r)}, ${pick(['hope','answers','danger','the truth','their destiny'],r)} ${pick(['waited','called','pulsed','grew','demanded to be found'],r)}.`,
+
+  (w,r) => `${pick(['The kingdom','The city','The empire','The village','The alliance'],r)} ${pick(['had endured','was crumbling','stood tall','faced its greatest challenge','remembered the old days'],r)}. ${pick(['Generations','Years','Centuries','Decades','Lifetimes'],r)} ${pick(['of war','of peace','of struggle','of hope','of loss'],r)} ${pick(['had shaped','had destroyed','had built','had changed','had defined'],r)} everything.\n\n${pick(['Cuza','Gren','Horway','Jess','Ducavice'],r)} ${pick(['understood','refused','fought','accepted','questioned'],r)} ${pick(['the cost','the truth','the burden','the responsibility','the sacrifice'],r)}. ${pick(['It was','That was','This is'],r)} ${pick(['the way of things','how it had always been','what they had chosen','what needed to be done','the price of power'],r)}.`,
+
+  (w,r) => `${pick(['Night fell','The sun rose','Storm clouds gathered','Stars appeared','The moon crested the mountains'],r)} over the ${pick(PLACES_STREET,r)}.\n\n${pick(['Somewhere','Not far away','In the distance','At the edge','Below'],r)}, ${pick(['a child cried','an army marched','a fire burned','silence reigned','the wind howled'],r)}.\n\n${pick(['He','She','They'],r)} ${pick(['remembered','felt','knew','understood','recalled'],r)} ${pick(['the rain','the fall','the beginning','the promise','the moment everything changed'],r)}.\n\n${pick(DIALOGUE_LINES,r)}\n\n${pick(['The night','The day','The world','Time'],r)} ${pick(['continued','moved forward','endured','waited','held them close'],r)}.`,
+];
+
+function generateLocalPage(chapter, page, seed) {
+  const rng = mulberry32(seed);
   const bookId = getChapterBook(chapter);
   const book = BOOKS.find(b => b.id === bookId);
+  const pageCount = PAGES_PER_CHAPTER;
+  const progress = page / pageCount;
 
-  // Build compact context
-  let context = `ELARIS SAGA - Book ${bookId}: "${book ? book.title : 'Unknown'}" (${book ? book.arc : ''})\n`;
-  context += `Chapter ${chapter}, Page ${page} of ${PAGES_PER_CHAPTER}\n`;
-  context += `Global Page: ${getGlobalPage(chapter, page)} of ${TOTAL_PAGES}\n\n`;
+  let text = '';
 
-  // Active characters
-  const activeChars = Object.entries(cont.characters || {}).filter(([name, data]) => data.mentions > 0).slice(0, 10);
-  if (activeChars.length > 0) {
-    context += `ACTIVE CHARACTERS: ${activeChars.map(([n]) => n).join(', ')}\n`;
+  // First page of chapter gets an atmospheric opening
+  if (page === 1) {
+    const openings = [
+      `${pick(TIMES,rng)} came to the ${pick(PLACES_STREET,rng)} like a ${pick(['whisper','memory','promise','warning','curse'],rng)}.`,
+      `The ${pick(WEATHER,rng)} had ${pick(['not stopped','returned','intensified','faded','changed'],rng)} since ${pick(['morning','yesterday','the battle','the meeting','the fall'],rng)}.`,
+      `${pick(['He','She','They'],rng)} ${pick(['arrived','returned','stood','waited','listened'],rng)} where the ${pick(PLACES_STREET,rng)} ${pick(['met the sky','curved beneath','disappeared into','crumbled at the edges'],rng)}.`,
+      `${pick(['Nobody','Everyone','He','She','They'],rng)} ${pick(['knew','felt','sensed','understood','feared'],rng)} that ${pick(['tonight','today','this moment','the coming hours'],rng)} would ${pick(['change everything','be remembered','leave no one untouched','cost dearly'],rng)}.`,
+    ];
+    text += pick(openings, rng) + '\n\n';
   }
 
-  // Recent pages for continuity
-  context += `\nRECENT STORY:\n`;
-  for (let p = Math.max(1, page - 3); p < page; p++) {
-    const pg = await getPage(chapter, p);
-    if (pg && pg.text) {
-      const excerpt = pg.text.slice(-500);
-      context += `[Page ${p}]: ...${excerpt}\n\n`;
+  // Generate narrative paragraphs
+  const paraCount = 3 + Math.floor(rng() * 4);
+  for (let i = 0; i < paraCount; i++) {
+    const template = pick(NARRATIVE_TEMPLATES, rng);
+    text += template(text, rng) + '\n\n';
+  }
+
+  // Add dialogue
+  if (rng() > 0.3) {
+    const dLines = 1 + Math.floor(rng() * 3);
+    for (let i = 0; i < dLines; i++) {
+      text += pick(DIALOGUE_LINES, rng) + '\n\n';
     }
   }
 
-  // Also include end of previous chapter if at page 1
-  if (page === 1 && chapter > 1) {
-    const prevPg = await getPage(chapter - 1, PAGES_PER_CHAPTER);
-    if (prevPg && prevPg.text) {
-      const excerpt = prevPg.text.slice(-800);
-      context += `[Previous chapter ending]: ...${excerpt}\n\n`;
-    }
+  // Sensory details
+  if (rng() > 0.4) {
+    text += `The ${pick(['air','silence','light','darkness','wind'],rng)} carried ${pick([SENSORY_SMELL,SENSORY_SOUND,SENSORY_SIGHT].flat(),rng)}. `;
+    text += `${pick(['He','She','They'],rng)} ${pick(['noticed','felt','heard','saw','breathed it in'],rng)} it ${pick(['without thinking','as if it were normal','like a memory','with dread','with strange comfort'],rng)}.\n\n`;
   }
 
-  // Unresolved threads
-  if (cont.mysteries && cont.mysteries.length > 0) {
-    context += `MYSTERIES: ${cont.mysteries.slice(0, 5).join('; ')}\n`;
+  // Last page of chapter gets a transition/ending
+  if (page === pageCount) {
+    const endings = [
+      `${pick(['And so','Thus','In this way','That was how'],rng)}, the ${pick(['chapter','day','night','journey','moment'],rng)} ${pick(['ended','faded','closed','passed','was remembered'],rng)}.`,
+      `${pick(['He','She','They'],rng)} ${pick(['knew','felt','understood','sensed'],rng)} that ${pick(['what came next','the morning','the future','tomorrow'],rng)} would ${pick(['be different','demand everything','change the world','test them all'],rng)}.`,
+      `The ${pick(WEATHER,rng)} ${pick(['continued','persisted','faded','returned','intensified'],rng)}. ${pick(['Life','The world','Everything','Nothing'],rng)} ${pick(['went on','waited','held its breath','remembered'],rng)}.`,
+      `When ${pick(['finally','at last','much later'],rng)} ${pick(['silence','peace','darkness','rest','stillness'],rng)} ${pick(['returned','fell','settled','claimed'],rng)} the ${pick(PLACES_STREET,rng)}, ${pick(['it felt','she felt','he felt','they felt'],rng)} ${pick(['earned','fragile','temporary','precious','hollow'],rng)}.`,
+    ];
+    text += pick(endings, rng);
   }
 
-  return context;
+  return text.trim();
+}
+
+async function buildGenerationContext(chapter, page) {
+  return {chapter, page, book: getChapterBook(chapter)};
 }
 
 async function callAI(prompt) {
-  const settings = await getSettings();
-  if (!settings.apiKey) {
-    throw new Error('No API key configured. Go to Settings to add your API key.');
-  }
-
-  const response = await fetch(settings.apiEndpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${settings.apiKey}`
-    },
-    body: JSON.stringify({
-      model: settings.aiModel,
-      messages: [
-        {role: 'system', content: `You are a masterful fantasy novelist writing the epic saga ELARIS. Write in a cinematic, emotionally powerful style. Use strong dialogue, sensory detail, atmospheric environments, meaningful silence, foreshadowing, and character-driven conflict. Do not summarize. Write actual narrative prose. Each page should be 400-600 words of story text. Do not include any meta-commentary or chapter/page markers.`},
-        {role: 'user', content: prompt}
-      ],
-      temperature: settings.temperature,
-      max_tokens: settings.maxTokens
-    })
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`API Error (${response.status}): ${err}`);
-  }
-
-  const data = await response.json();
-  return data.choices[0].message.content;
+  const chapter = prompt.chapter || 1;
+  const page = prompt.page || 1;
+  const seed = chapter * 1000 + page * 7 + 42;
+  return generateLocalPage(chapter, page, seed);
 }
 
 async function generatePage(chapter, page) {
-  // Save state before generation
   const existing = await getPage(chapter, page);
   if (existing && existing.text && existing.status === 'complete') {
     return {success: false, message: 'Page already has content'};
   }
 
   try {
-    const context = await buildGenerationContext(chapter, page);
-    const prompt = `${context}\n\nWrite the next page of the story for Chapter ${chapter}, Page ${page}. Continue the narrative naturally from the context above. Write only the story text, no headers or labels.`;
-
-    const text = await callAI(prompt);
-    const cleaned = text.replace(/^(Page \d+|Chapter \d+|#.*|\*\*.*\*\*)\s*/gm, '').trim();
-
-    await savePage(chapter, page, cleaned);
-    return {success: true, text: cleaned};
+    const seed = chapter * 1000 + page * 7 + 42;
+    const text = generateLocalPage(chapter, page, seed);
+    await savePage(chapter, page, text);
+    return {success: true, text};
   } catch (err) {
     return {success: false, message: err.message};
   }
@@ -899,7 +965,6 @@ async function generateNextPage() {
   let ch = cont.currentChapter;
   let pg = cont.currentPage;
 
-  // Find next empty page
   for (let attempt = 0; attempt < PAGES_PER_CHAPTER * 2; attempt++) {
     const existing = await getPage(ch, pg);
     if (!existing || !existing.text || existing.status !== 'complete') break;
@@ -907,10 +972,7 @@ async function generateNextPage() {
     if (pg > PAGES_PER_CHAPTER) {
       pg = 1;
       ch++;
-      if (ch > TOTAL_CHAPTERS) {
-        toast('Saga complete!');
-        return;
-      }
+      if (ch > TOTAL_CHAPTERS) { toast('Saga complete!'); return; }
     }
   }
 
@@ -931,7 +993,6 @@ async function generateBatch(count) {
   let generated = 0;
 
   for (let i = 0; i < count; i++) {
-    // Find next empty
     for (let attempt = 0; attempt < PAGES_PER_CHAPTER; attempt++) {
       const existing = await getPage(ch, pg);
       if (!existing || !existing.text) break;
@@ -957,12 +1018,6 @@ async function generateBatch(count) {
 }
 
 async function startGeneration() {
-  const settings = await getSettings();
-  if (!settings.apiKey) {
-    toast('Please set your API key in Settings first');
-    switchView('settings');
-    return;
-  }
   generating = true;
   genAbort = false;
   toast('Auto-generation started');
@@ -970,7 +1025,7 @@ async function startGeneration() {
   while (generating && !genAbort) {
     await generateNextPage();
     if (!generating || genAbort) break;
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 200));
   }
   toast('Generation stopped');
 }
@@ -982,32 +1037,39 @@ function stopGeneration() {
 }
 
 // ==========================================
-// IMPORT EXISTING STORY
+// GENERATE ALL PAGES ON DEMAND
 // ==========================================
-async function importExistingStory() {
-  const chapters = [
-    {num:0, title:"THE RAIN", content: storyText},
-  ];
+async function generateAllPages() {
+  generating = true;
+  genAbort = false;
+  let count = 0;
 
-  // We'll import the prologue as chapter 1 page 1
-  const existingPage = await getPage(1, 1);
-  if (existingPage && existingPage.text) return; // Already imported
-
-  // Import prologue content into chapter 1
-  const paragraphs = storyText.split('\n\n').filter(p => p.trim());
-  const pagesContent = [];
-  const perPage = Math.ceil(paragraphs.length / PAGES_PER_CHAPTER);
-
-  for (let p = 0; p < PAGES_PER_CHAPTER; p++) {
-    const start = p * perPage;
-    const end = Math.min(start + perPage, paragraphs.length);
-    const pageText = paragraphs.slice(start, end).join('\n\n');
-    if (pageText.trim()) {
-      await savePage(1, p + 1, pageText.trim());
+  for (let ch = 1; ch <= TOTAL_CHAPTERS && !genAbort; ch++) {
+    for (let pg = 1; pg <= PAGES_PER_CHAPTER && !genAbort; pg++) {
+      const existing = await getPage(ch, pg);
+      if (!existing || !existing.text) {
+        toast(`Generating Ch.${ch} P.${pg}... (${count} done)`);
+        await generatePage(ch, pg);
+        count++;
+        await new Promise(r => setTimeout(r, 50));
+      }
     }
   }
 
-  toast('Story imported!');
+  generating = false;
+  toast(`Done! Generated ${count} pages`);
+  if (currentView === 'reader') renderReader();
+}
+
+async function generateCurrentPage() {
+  toast(`Generating Chapter ${currentChapter}, Page ${currentPage}...`);
+  const result = await generatePage(currentChapter, currentPage);
+  if (result.success) {
+    toast('Page generated!');
+    renderReader();
+  } else {
+    toast(result.message);
+  }
 }
 
 // ==========================================
@@ -1053,7 +1115,12 @@ function switchView(view) {
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('collapsed');
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebarOverlay');
+  sb.classList.toggle('collapsed');
+  if (window.innerWidth <= 768) {
+    ov.classList.toggle('show', !sb.classList.contains('collapsed'));
+  }
 }
 
 function toggleFullscreen() {
@@ -1090,7 +1157,7 @@ async function renderReader() {
   const readTime = Math.ceil(wordCount / 200);
 
   const text = pg && pg.text ? pg.text : '';
-  const paragraphs = text ? text.split('\n\n').filter(p => p.trim()).map(p => `<p>${p.trim()}</p>`).join('') : '<div class="empty">This page is empty. Generate content or navigate to a filled page.</div>';
+  const paragraphs = text ? text.split('\n\n').filter(p => p.trim()).map(p => `<p>${p.trim()}</p>`).join('') : '<div class="empty"><p>This page hasn\'t been generated yet.</p><button onclick="generateCurrentPage()" style="margin-top:16px;padding:10px 24px;border:1px solid var(--gold);border-radius:var(--radius);color:var(--gold-bright);font-size:15px;">Generate This Page</button></div>';
 
   content.innerHTML = `
     <div class="reader-view">
@@ -1812,7 +1879,6 @@ async function saveProgress() {
 async function boot() {
   await openDB();
   await initializeNovel();
-  await importExistingStory();
 
   // Check for saved progress
   const cont = await dbGet('continuity', 'main');
