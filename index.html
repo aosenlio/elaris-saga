@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Elaris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ece2c9;--ink:#2c2216;--ink-soft:#5a4c38;--gold:#8a6a2f;--gold-bright:#b48a3e;
+  --backdrop-1:#100c07;--backdrop-2:#1e160c;--panel:#1a140d;--panel-border:rgba(180,138,62,.25);
+  --panel-hover:#231c12;--text:#d4c9a8;--text-dim:#8a7d65;--danger:#a33;--success:#5a8a3e;
+  --sidebar-w:260px;--radius:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;font-family:'EB Garamond',serif;color:var(--text);background:var(--backdrop-1);}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:var(--text);font-size:14px;}
+input,textarea,select{font-family:inherit;background:var(--panel);color:var(--text);border:1px solid var(--panel-border);border-radius:var(--radius);padding:8px 12px;font-size:14px;outline:none;width:100%;}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);}
+textarea{resize:vertical;}
+label{color:var(--text-dim);font-size:13px;margin-bottom:4px;display:block;}
+
+/* COVER */
+.cover{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at 50% 20%,#2a2013,#0f0b06 75%);transition:opacity .8s,visibility .8s;}
+.cover.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.cover h1{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,10vw,96px);font-weight:600;color:var(--gold-bright);letter-spacing:8px;margin-bottom:8px;text-shadow:0 0 40px rgba(180,138,62,.3);}
+.cover .subtitle{font-size:16px;color:var(--text-dim);letter-spacing:4px;margin-bottom:50px;}
+.cover-btn{padding:16px 48px;border:1px solid var(--gold);background:rgba(138,106,47,.15);color:var(--gold-bright);font-size:18px;letter-spacing:3px;border-radius:var(--radius);transition:all .3s;font-family:'Cormorant Garamond',serif;}
+.cover-btn:hover{background:rgba(138,106,47,.35);box-shadow:0 0 30px rgba(180,138,62,.2);}
+
+/* APP LAYOUT */
+.app{display:flex;height:100vh;height:100dvh;overflow:hidden;}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--panel);border-right:1px solid var(--panel-border);display:flex;flex-direction:column;transition:margin-left .3s;z-index:20;overflow:hidden;}
+.sidebar.collapsed{margin-left:calc(var(--sidebar-w) * -1);}
+.sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--panel-border);}
+.sidebar-header h2{font-family:'Cormorant Garamond',serif;color:var(--gold-bright);font-size:22px;letter-spacing:2px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--text-dim);transition:all .2s;cursor:pointer;font-size:15px;}
+.nav-item:hover,.nav-item.active{background:var(--panel-hover);color:var(--gold-bright);}
+.nav-item .icon{width:20px;text-align:center;font-size:16px;}
+.nav-section{padding:12px 16px 6px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);opacity:.5;}
+.gen-controls{padding:12px 16px;border-top:1px solid var(--panel-border);display:flex;flex-direction:column;gap:6px;}
+.gen-controls button{padding:8px;border:1px solid var(--panel-border);border-radius:var(--radius);font-size:13px;transition:all .2s;}
+.gen-controls button:hover{border-color:var(--gold);background:rgba(138,106,47,.15);}
+.gen-controls .btn-start{border-color:var(--success);color:var(--success);}
+.gen-controls .btn-start:hover{background:rgba(90,138,62,.15);}
+.gen-controls .btn-stop{border-color:var(--danger);color:var(--danger);}
+.gen-controls .btn-stop:hover{background:rgba(170,51,51,.15);}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--panel-border);min-height:48px;}
+.toggle-sidebar{font-size:20px;color:var(--text-dim);padding:4px 8px;}
+.toggle-sidebar:hover{color:var(--gold-bright);}
+.topbar-title{font-family:'Cormorant Garamond',serif;color:var(--gold-bright);font-size:18px;flex:1;}
+.topbar-actions{display:flex;gap:8px;align-items:center;}
+.topbar-actions button{padding:6px 12px;border:1px solid var(--panel-border);border-radius:var(--radius);font-size:13px;}
+.topbar-actions button:hover{border-color:var(--gold);}
+
+.content{flex:1;overflow-y:auto;padding:20px;}
+
+/* READER */
+.reader-view{max-width:720px;margin:0 auto;padding:20px 0;}
+.reader-header{text-align:center;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid var(--panel-border);}
+.reader-header h2{font-family:'Cormorant Garamond',serif;color:var(--gold-bright);font-size:28px;margin-bottom:8px;}
+.reader-header .meta{color:var(--text-dim);font-size:13px;}
+.reader-body{line-height:1.85;font-size:18px;color:var(--text);min-height:300px;}
+.reader-body p{margin-bottom:1em;text-indent:2em;}
+.reader-body .empty{color:var(--text-dim);font-style:italic;text-align:center;padding:40px;text-indent:0;}
+.reader-nav{display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:20px;border-top:1px solid var(--panel-border);}
+.reader-nav button{padding:10px 24px;border:1px solid var(--panel-border);border-radius:var(--radius);font-size:14px;}
+.reader-nav button:hover:not(:disabled){border-color:var(--gold);background:rgba(138,106,47,.15);}
+.reader-nav button:disabled{opacity:.3;cursor:default;}
+.progress-bar{height:3px;background:var(--panel-border);margin-top:20px;border-radius:2px;overflow:hidden;}
+.progress-bar .fill{height:100%;background:var(--gold);transition:width .3s;border-radius:2px;}
+
+/* PANELS */
+.panel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.panel-card{background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--radius);padding:20px;transition:border-color .2s;}
+.panel-card:hover{border-color:var(--gold);}
+.panel-card h3{font-family:'Cormorant Garamond',serif;color:var(--gold-bright);font-size:20px;margin-bottom:10px;}
+.panel-card p{color:var(--text-dim);font-size:14px;line-height:1.6;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.stat-box{background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--radius);padding:16px;text-align:center;}
+.stat-box .num{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--gold-bright);}
+.stat-box .lbl{font-size:12px;color:var(--text-dim);margin-top:4px;}
+
+/* CHAPTERS LIST */
+.chapter-list{display:flex;flex-direction:column;gap:4px;}
+.chapter-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius);cursor:pointer;transition:background .2s;}
+.chapter-item:hover{background:var(--panel-hover);}
+.chapter-item.active{background:rgba(138,106,47,.15);border:1px solid var(--panel-border);}
+.chapter-item .ch-num{font-family:'Cormorant Garamond',serif;color:var(--gold);min-width:30px;}
+.chapter-item .ch-title{flex:1;font-size:15px;}
+.chapter-item .ch-status{font-size:11px;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:1px;}
+.ch-status.complete{background:rgba(90,138,62,.2);color:var(--success);}
+.ch-status.progress{background:rgba(180,138,62,.2);color:var(--gold-bright);}
+.ch-status.locked{background:rgba(100,100,100,.2);color:var(--text-dim);}
+
+/* BOOK TABS */
+.book-tabs{display:flex;gap:4px;margin-bottom:16px;overflow-x:auto;padding-bottom:8px;}
+.book-tab{padding:6px 14px;border:1px solid var(--panel-border);border-radius:var(--radius);white-space:nowrap;font-size:13px;transition:all .2s;}
+.book-tab:hover{border-color:var(--gold);}
+.book-tab.active{background:rgba(138,106,47,.2);border-color:var(--gold);color:var(--gold-bright);}
+
+/* ENCYCLOPEDIA */
+.entry-list{display:flex;flex-direction:column;gap:4px;}
+.entry-item{padding:10px 14px;border-radius:var(--radius);cursor:pointer;transition:background .2s;display:flex;justify-content:space-between;align-items:center;}
+.entry-item:hover{background:var(--panel-hover);}
+.entry-name{font-weight:500;}
+.entry-meta{font-size:12px;color:var(--text-dim);}
+.entry-detail{background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--radius);padding:20px;margin-top:12px;}
+.entry-detail h3{font-family:'Cormorant Garamond',serif;color:var(--gold-bright);font-size:22px;margin-bottom:12px;}
+.detail-row{display:flex;gap:8px;margin-bottom:8px;font-size:14px;}
+.detail-row .dr-label{color:var(--text-dim);min-width:100px;}
+
+/* BOOKMARKS & NOTES */
+.bm-item{display:flex;gap:12px;padding:12px;border:1px solid var(--panel-border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:border-color .2s;}
+.bm-item:hover{border-color:var(--gold);}
+.bm-title{font-weight:500;color:var(--gold-bright);margin-bottom:4px;}
+.bm-note{font-size:13px;color:var(--text-dim);}
+.bm-meta{font-size:11px;color:var(--text-dim);margin-top:4px;}
+
+/* SEARCH */
+.search-box{position:relative;margin-bottom:20px;}
+.search-box input{padding-left:36px;}
+.search-box .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);}
+.search-result{padding:10px 14px;border:1px solid var(--panel-border);border-radius:var(--radius);margin-bottom:6px;cursor:pointer;transition:border-color .2s;}
+.search-result:hover{border-color:var(--gold);}
+.search-result .sr-title{color:var(--gold-bright);font-size:14px;margin-bottom:4px;}
+.search-result .sr-context{font-size:13px;color:var(--text-dim);}
+.search-result mark{background:rgba(180,138,62,.3);color:var(--gold-bright);padding:0 2px;border-radius:2px;}
+
+/* SETTINGS */
+.settings-group{margin-bottom:24px;}
+.settings-group h3{font-family:'Cormorant Garamond',serif;color:var(--gold-bright);font-size:18px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--panel-border);}
+.setting-row{display:flex;align-items:center;gap:16px;margin-bottom:12px;}
+.setting-row label{min-width:160px;margin-bottom:0;}
+.setting-row input,.setting-row select{max-width:300px;}
+.setting-row .hint{font-size:12px;color:var(--text-dim);margin-top:2px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;}
+.modal-overlay.show{opacity:1;visibility:visible;}
+.modal{background:var(--panel);border:1px solid var(--panel-border);border-radius:12px;padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
+.modal h3{font-family:'Cormorant Garamond',serif;color:var(--gold-bright);font-size:22px;margin-bottom:16px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+.modal-actions button{padding:8px 20px;border:1px solid var(--panel-border);border-radius:var(--radius);}
+.modal-actions button.primary{background:rgba(138,106,47,.2);border-color:var(--gold);color:var(--gold-bright);}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--gold);border-radius:var(--radius);padding:12px 20px;color:var(--gold-bright);font-size:14px;z-index:200;opacity:0;transform:translateY(20px);transition:all .3s;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{position:fixed;top:0;left:0;bottom:0;z-index:50;}
+  .sidebar:not(.collapsed){margin-left:0;}
+  .sidebar.collapsed{margin-left:calc(var(--sidebar-w) * -1);}
+  .panel-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- COVER SCREEN -->
+<div class="cover" id="cover">
+  <h1>ELARIS</h1>
+  <div class="subtitle">A 30-BOOK SAGA</div>
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+    <button class="cover-btn" onclick="enterApp(true)">BEGIN</button>
+    <button class="cover-btn" id="continueBtn" style="display:none;background:rgba(90,138,62,.15);border-color:var(--success);color:var(--success);" onclick="enterApp(false)">CONTINUE READING</button>
+    <div id="lastReadInfo" style="font-size:13px;color:var(--text-dim);margin-top:6px;display:none;"></div>
+  </div>
+  <div style="position:absolute;bottom:24px;font-size:12px;color:var(--text-dim);opacity:.4;">Press [ Space ] to save progress anywhere</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal"></div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none;">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>ELARIS</h2>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section">Navigation</div>
+      <div class="nav-item active" data-view="reader" onclick="switchView('reader')">
+        <span class="icon">&#9998;</span> Read
+      </div>
+      <div class="nav-item" data-view="chapters" onclick="switchView('chapters')">
+        <span class="icon">&#9776;</span> Chapters
+      </div>
+      <div class="nav-item" data-view="bookmarks" onclick="switchView('bookmarks')">
+        <span class="icon">&#9733;</span> Bookmarks
+      </div>
+      <div class="nav-item" data-view="search" onclick="switchView('search')">
+        <span class="icon">&#128269;</span> Search
+      </div>
+      <div class="nav-section">World</div>
+      <div class="nav-item" data-view="characters" onclick="switchView('characters')">
+        <span class="icon">&#9823;</span> Characters
+      </div>
+      <div class="nav-item" data-view="nations" onclick="switchView('nations')">
+        <span class="icon">&#9872;</span> Nations
+      </div>
+      <div class="nav-item" data-view="locations" onclick="switchView('locations')">
+        <span class="icon">&#9960;</span> Locations
+      </div>
+      <div class="nav-item" data-view="magic" onclick="switchView('magic')">
+        <span class="icon">&#10030;</span> Magic
+      </div>
+      <div class="nav-item" data-view="factions" onclick="switchView('factions')">
+        <span class="icon">&#9876;</span> Factions
+      </div>
+      <div class="nav-section">Tools</div>
+      <div class="nav-item" data-view="notes" onclick="switchView('notes')">
+        <span class="icon">&#128221;</span> Notes
+      </div>
+      <div class="nav-item" data-view="dashboard" onclick="switchView('dashboard')">
+        <span class="icon">&#9632;</span> Dashboard
+      </div>
+      <div class="nav-item" data-view="settings" onclick="switchView('settings')">
+        <span class="icon">&#9881;</span> Settings
+      </div>
+    </div>
+    <div class="gen-controls">
+      <button class="btn-start" onclick="startGeneration()">&#9654; Start Elaris</button>
+      <button onclick="generateNextPage()">Generate Next Page</button>
+      <button onclick="generateBatch(5)">Generate 5 Pages</button>
+      <button class="btn-stop" onclick="stopGeneration()">&#9632; Stop</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <button class="toggle-sidebar" onclick="toggleSidebar()">&#9776;</button>
+      <div class="topbar-title" id="topbarTitle">Reader</div>
+      <div class="topbar-actions">
+        <button onclick="saveProgress()" style="border-color:var(--success);color:var(--success);">&#9109; Save [Space]</button>
+        <button onclick="toggleFullscreen()">&#9974;</button>
+        <button id="immersiveBtn" onclick="toggleImmersive()">Focus</button>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// ELARIS - COMPLETE DIGITAL NOVEL SYSTEM
+// ==========================================
+
+const DB_NAME = 'ElarisDB';
+const DB_VERSION = 3;
+let db = null;
+let currentView = 'reader';
+let currentChapter = 1;
+let currentPage = 1;
+let currentBook = 1;
+let generating = false;
+let genAbort = false;
+let immersiveMode = false;
+
+// ==========================================
+// 30 BOOKS STRUCTURE
+// ==========================================
+const BOOKS = [
+  {id:1,title:"The Rain and the Fall",arc:"Earth Fall",chStart:1,chEnd:7,summary:"Cuza and Gren's ordinary life ends when the Earth storm tears reality apart, casting them into the world of Elaris."},
+  {id:2,title:"Strangers in a Strange Land",arc:"Earth Fall",chStart:8,chEnd:14,summary:"Arriving in Elaris, the two friends navigate a dangerous new world and arrive at the city of Gronsrock."},
+  {id:3,title:"The City of Shards",arc:"Gronsrock Split",chStart:15,chEnd:21,summary:"Gronsrock reveals its dark underbelly. Gren's anger grows as he witnesses the city's corruption and inequality."},
+  {id:4,title:"The Breaking of Gronsrock",arc:"Gronsrock Split",chStart:22,chEnd:28,summary:"Gren destroys Gronsrock in a devastating display of power. Cuza is left alone, marked as a person of interest."},
+  {id:5,title:"The Road to Nowhere",arc:"Earth Fall",chStart:29,chEnd:36,summary:"Cuza wanders Elaris alone, learning its rules and discovering the true scope of his atomic abilities."},
+  {id:6,title:"The Companions",arc:"Earth Fall",chStart:37,chEnd:44,summary:"Cuza meets Horway, Jess, Ducavice, and Silly. A new family begins to form as they face their first great battle."},
+  {id:7,title:"The Black Dragon",arc:"Sky Kingdom Wars",chStart:45,chEnd:52,summary:"A devastating dragon attack reveals the limits of ordinary power and the terrifying scope of Cuza's true strength."},
+  {id:8,title:"Kingdoms of the Sky",arc:"Sky Kingdom Wars",chStart:53,chEnd:60,summary:"The party reaches the Sky Kingdom of Cara. Cuza learns sky magic in minutes and discovers his ability to create matter."},
+  {id:9,title:"The Warrior of Light",arc:"Sky Kingdom Wars",chStart:61,chEnd:68,summary:"An ancient seal shatters and a dragon emerges over Cara. Cuza reveals his power as the Warrior of Light."},
+  {id:10,title:"The Age of War Begins",arc:"Sky Kingdom Wars",chStart:69,chEnd:76,summary:"King Lezo's declaration plunges Elaris into war. Cuza and his friends join Cara's defense."},
+  {id:11,title:"The Battle for Cara",arc:"Sky Kingdom Wars",chStart:77,chEnd:84,summary:"Full-scale war engulfs the sky kingdoms. Cuza confronts Lezo as the Warrior of Light, ending the battle."},
+  {id:12,title:"Half a Kingdom",arc:"Kingdom of Silly",chStart:85,chEnd:93,summary:"Cuza receives half of Lezo's kingdom. Named by Silly, the Kingdom of Silly begins its extraordinary growth."},
+  {id:13,title:"The Kingdom Expands",arc:"Kingdom of Silly",chStart:94,chEnd:102,summary:"Cuza uses his atomic powers to expand Silly's borders. Millions arrive seeking the Warrior of Light's protection."},
+  {id:14,title:"The Black Airships",arc:"Kingdom of Silly",chStart:103,chEnd:110,summary:"A massive enemy fleet appears. Gren returns, older and more powerful, leading the assault on Silly."},
+  {id:15,title:"The Colossus",arc:"Kingdom of Silly",chStart:111,chEnd:118,summary:"A gigantic war machine threatens to destroy Silly. Cuza faces it alone while the Warrior of Light destroys the fleet."},
+  {id:16,title:"The Message",arc:"Kingdom of Silly",chStart:119,chEnd:126,summary:"Warnings arrive. The manipulated truth behind Gren's actions begins to surface."},
+  {id:17,title:"The Greatest Battle",arc:"Kingdom of Silly",chStart:127,chEnd:134,summary:"Cuza and Gren meet in the sky for their legendary battle. Neither wins. Both remember who they once were."},
+  {id:18,title:"Acra and Gruean",arc:"Kingdom of Silly",chStart:135,chEnd:142,summary:"After the battle, old names are spoken. Gren walks away. Their friendship echoes across history."},
+  {id:19,title:"Seven Years of Peace",arc:"Generational Peace",chStart:143,chEnd:150,summary:"Seven years pass. Silly grows into a great power. Cuza and Jess build a family."},
+  {id:20,title:"The First World War",arc:"Generational Peace",chStart:151,chEnd:158,summary:"The Verdant Alliance attacks. Cuza ends the war not through conquest but by refusing to let another generation fall."},
+  {id:21,title:"The Peace of Elaris",arc:"Generational Peace",chStart:159,chEnd:166,summary:"Nations gather. The Elaris Peace Alliance is formed. But the Black Crown threatens to destroy everything."},
+  {id:22,title:"The Last Shadow",arc:"Generational Peace",chStart:167,chEnd:174,summary:"The mysterious Black Crown threat fades. Cuza's children grow. The next generation begins to emerge."},
+  {id:23,title:"The Next Generation",arc:"Generational Peace",chStart:175,chEnd:182,summary:"Cuza's children train and grow. New powers emerge. The legacy of the old generation takes root."},
+  {id:24,title:"Shadows Return",arc:"Generational Peace",chStart:183,chEnd:190,summary:"Old enemies resurface. New threats emerge from beyond the known world. The peace is tested."},
+  {id:25,title:"The Forgotten Empire",arc:"Generational Peace",chStart:191,chEnd:198,summary:"Ancient ruins reveal secrets of a forgotten civilization. The cosmic mystery deepens."},
+  {id:26,title:"The Cosmic Anchor",arc:"Generational Peace",chStart:199,chEnd:202,summary:"The truth behind the Earth storm is finally revealed. The tearing of the cosmic anchor changes everything."},
+  {id:27,title:"The Final Alliance",arc:"Generational Peace",chStart:203,chEnd:206,summary:"All the nations of Elaris unite for the first time. The stakes have never been higher."},
+  {id:28,title:"The Last War",arc:"Generational Peace",chStart:207,chEnd:210,summary:"The final conflict begins. Old bonds are tested. Sacrifices are made."},
+  {id:29,title:"What Remains",arc:"Generational Peace",chStart:211,chEnd:213,summary:"The aftermath. Rebuilding. Remembering. The world begins to heal."},
+  {id:30,title:"Home",arc:"Generational Peace",chStart:214,chEnd:214,summary:"The final chapter. A peaceful evening. The kingdom's lights stretch to the horizon. For once, they can simply live."}
+];
+
+const TOTAL_CHAPTERS = 214;
+const PAGES_PER_CHAPTER = 12;
+const TOTAL_PAGES = 2568;
+
+// ==========================================
+// PROLOGUE CONTENT
+// ==========================================
+const PROLOGUE_CONTENT = `The rain had started before sunset.
+
+By midnight, it had become a storm.
+
+Water poured from the rooftops and raced along the streets in shining streams. Thunder rolled between the buildings, and lightning occasionally turned the entire city white for a fraction of a second.
+
+Most people had gone home hours ago.
+
+Two had not.
+
+Cuza walked beneath a useless umbrella, his jacket soaked through anyway.
+
+Beside him, Gren stepped around a puddle.
+
+"You know," Cuza said, "we could have stayed home."
+
+Gren looked at him.
+
+"And do what?"
+
+"Literally anything."
+
+"I was bored."
+
+"You dragged me outside because you were bored?"
+
+"Yes."
+
+Cuza stared at him.
+
+Gren smiled.
+
+"You're welcome."
+
+"For what?"
+
+"For giving you an exciting evening."
+
+Cuza laughed.
+
+"You're an idiot."
+
+"And you're still walking with me."
+
+"That says more about me than it does about you."
+
+They continued down the empty road.
+
+They had been friends for years.
+
+Best friends.
+
+The kind who could spend hours doing absolutely nothing and still somehow have a good time.
+
+Neither knew that this would be the last ordinary conversation they would ever have.
+
+Cuza suddenly stopped.
+
+Gren took another step.
+
+"What?"
+
+Cuza looked down.
+
+A thin crack ran beneath his shoe.
+
+"Was that there before?"
+
+Gren crouched.
+
+"No."
+
+The rainwater disappeared into the crack.
+
+Gren touched the pavement.
+
+Nothing.
+
+"Probably nothing."
+
+Cuza nodded.
+
+Thenâ€”
+
+CRK.
+
+Another crack appeared.
+
+Then another.
+
+Then another.
+
+The road trembled.
+
+Gren slowly stood.
+
+"Cuza."
+
+"I know."
+
+The pavement began splitting apart.
+
+Cars rocked.
+
+A streetlight fell.
+
+The road dropped several centimeters.
+
+"Move!"
+
+They turned.
+
+The street behind them cracked open.
+
+Cuza grabbed Gren.
+
+"RUN!"
+
+They ran.
+
+But there was nowhere to go.
+
+The entire road collapsed.
+
+The pavement disappeared beneath their feet.
+
+For one moment, Cuza saw the storm above.
+
+Thenâ€”
+
+Darkness.`;
+
+// Pre-loaded chapter data from the existing story
+const CHAPTER_TITLES = {};
+const PRELOADED_CHAPTERS = {};
+
+// Parse the existing story into chapters
+const storyText = PROLOGUE_CONTENT;
+// Chapter titles from the story
+const knownTitles = {
+  0: "THE RAIN", 1: "THE FALL", 2: "ELARIS", 3: "GRONSROCK",
+  4: "THE PARTY", 5: "THE BLACK DRAGON", 6: "CARA",
+  7: "THE WARRIOR OF LIGHT", 8: "THE AGE OF WAR",
+  9: "THE WARRIOR OF LIGHT", 10: "THE KINGDOM OF SILLY",
+  11: "THE BLACK AIRSHIPS", 12: "THE FRIEND WHO RETURNED",
+  13: "THE COLOSSUS", 14: "THE MESSAGE", 15: "THE GREATEST BATTLE",
+  16: "ACRA AND GRUEAN", 17: "SEVEN YEARS", 18: "THE FIRST WORLD WAR",
+  19: "PEACE", 20: "THE LAST SHADOW", 21: "THE NEXT GENERATION", 22: "HOME"
+};
+
+// ==========================================
+// INDEXED DB
+// ==========================================
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('pages')) {
+        const ps = d.createObjectStore('pages', {keyPath: 'id'});
+        ps.createIndex('chapter', 'chapter');
+        ps.createIndex('book', 'book');
+      }
+      if (!d.objectStoreNames.contains('chapters')) {
+        d.createObjectStore('chapters', {keyPath: 'id'});
+      }
+      if (!d.objectStoreNames.contains('books')) {
+        d.createObjectStore('books', {keyPath: 'id'});
+      }
+      if (!d.objectStoreNames.contains('continuity')) {
+        d.createObjectStore('continuity', {keyPath: 'key'});
+      }
+      if (!d.objectStoreNames.contains('encyclopedia')) {
+        const enc = d.createObjectStore('encyclopedia', {keyPath: 'id'});
+        enc.createIndex('type', 'type');
+      }
+      if (!d.objectStoreNames.contains('bookmarks')) {
+        d.createObjectStore('bookmarks', {keyPath: 'id', autoIncrement: true});
+      }
+      if (!d.objectStoreNames.contains('notes')) {
+        d.createObjectStore('notes', {keyPath: 'id', autoIncrement: true});
+      }
+      if (!d.objectStoreNames.contains('settings')) {
+        d.createObjectStore('settings', {keyPath: 'key'});
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror = e => reject(e);
+  });
+}
+
+function dbPut(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).put(data);
+    tx.oncomplete = () => resolve();
+    tx.onerror = e => reject(e);
+  });
+}
+
+function dbGet(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = e => reject(e);
+  });
+}
+
+function dbGetAll(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = e => reject(e);
+  });
+}
+
+function dbGetByIndex(store, indexName, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const idx = tx.objectStore(store).index(indexName);
+    const req = idx.getAll(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = e => reject(e);
+  });
+}
+
+function dbDelete(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = e => reject(e);
+  });
+}
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+function getChapterBook(chapterNum) {
+  for (const b of BOOKS) {
+    if (chapterNum >= b.chStart && chapterNum <= b.chEnd) return b.id;
+  }
+  return 1;
+}
+
+function getGlobalPage(chapter, page) {
+  return (chapter - 1) * PAGES_PER_CHAPTER + page;
+}
+
+async function initializeNovel() {
+  const existing = await dbGetAll('chapters');
+  if (existing.length >= TOTAL_CHAPTERS) return;
+
+  for (let ch = 1; ch <= TOTAL_CHAPTERS; ch++) {
+    const bookId = getChapterBook(ch);
+    await dbPut('chapters', {
+      id: ch,
+      book: bookId,
+      title: knownTitles[ch - 1] || `Chapter ${ch}`,
+      status: ch === 1 ? 'in_progress' : 'locked',
+      wordCount: 0,
+      completionPct: 0,
+      notes: ''
+    });
+  }
+
+  const bookData = await dbGetAll('books');
+  if (bookData.length < 30) {
+    for (const b of BOOKS) {
+      await dbPut('books', {...b, status: b.id === 1 ? 'in_progress' : 'locked', wordCount: 0, progress: 0});
+    }
+  }
+
+  // Initialize continuity
+  const cont = await dbGet('continuity', 'main');
+  if (!cont) {
+    await dbPut('continuity', {
+      key: 'main',
+      currentChapter: 1,
+      currentPage: 1,
+      currentBook: 1,
+      globalPage: 1,
+      characters: {},
+      nations: {},
+      locations: {},
+      magic: {},
+      factions: {},
+      mysteries: [],
+      foreshadowing: [],
+      events: [],
+      relationships: {},
+      unresolvedThreads: []
+    });
+  }
+
+  // Seed initial encyclopedia entries
+  const encEntries = await dbGetAll('encyclopedia');
+  if (encEntries.length === 0) {
+    await seedEncyclopedia();
+  }
+}
+
+async function seedEncyclopedia() {
+  const entries = [
+    {id:'char_cuza',type:'character',name:'Cuza',alsoKnown:'Acra, Binder of Atoms, Warrior of Light',description:'A young man from Earth who possesses terrifying control over matter at the atomic and subatomic level.',status:'Alive',location:'Kingdom of Silly',abilities:'Atomic manipulation, matter restructuring, creation ex nihilo',possessions:'None noted',relationships:'Gren (best friend/rival), Jess (wife), Horway (companion), Ducavice (companion), Silly (companion)',firstAppearance:'Prologue',importantEvents:'Destroyed Gronsrock (indirectly), Became King of Silly, Defeated Lezo, Created the Kingdom from nothing, Ended the First World War'},
+    {id:'char_gren',type:'character',name:'Gren',alsoKnown:'Gruean, Kinetic Splitter',description:'Cuza\'s best friend who manipulates particle acceleration, vectors, raw energy, and kinetic force. His abilities have a mathematical upper limit.',status:'Alive',location:'Unknown',abilities:'Kinetic force manipulation, particle acceleration, energy projection',possessions:'None noted',relationships:'Cuza (best friend/rival)',firstAppearance:'Prologue',importantEvents:'Destroyed Gronsrock, Manipulated by unknown figure, Led assault on Silly, Fought Cuza in The Greatest Battle'},
+    {id:'char_horway',type:'character',name:'Horway',alsoKnown:'',description:'A red-haired warrior who is energetic and loves his battle axe more than himself.',status:'Alive',location:'Kingdom of Silly',abilities:'Warrior combat, Cleaver of Blood wielder',possessions:'Cleaver of Blood (battle axe forged from blood-reactive lithic metal)',relationships:'Cuza (friend/companion), Family',firstAppearance:'Chapter 4',importantEvents:'Commander of the Royal Army of Silly'},
+    {id:'char_jess',type:'character',name:'Jess',alsoKnown:'',description:'A quiet, intelligent woman who loves reading. Wields the Lexicon of Ruin.',status:'Alive',location:'Kingdom of Silly',abilities:'Lexicon of Ruin (reality-warping book), Translation of ancient scripts',possessions:'Lexicon of Ruin',relationships:'Cuza (wife), Children',firstAppearance:'Chapter 4',importantEvents:'Queen of Silly, Mother of Cuza\'s children'},
+    {id:'char_ducavice',type:'character',name:'Ducavice',alsoKnown:'',description:'A silent guardian with slick black hair. Uses spatial vectors to form kinetic shields. Has a tragic past involving the fall of a kingdom.',status:'Alive',location:'Kingdom of Silly',abilities:'Spatial vectors, kinetic shields',possessions:'None noted',relationships:'Cuza (companion), Family',firstAppearance:'Chapter 4',importantEvents:'Chief Protector of the Royal Family'},
+    {id:'char_silly',type:'character',name:'Silly',alsoKnown:'',description:'A small dog-like deceptive creature. Acts as a visual and emotional anchor for peace. Possesses passive immunity to cosmic, atomic, and kinetic magic.',status:'Alive',location:'Kingdom of Silly',abilities:'Passive immunity to cosmic, atomic, and kinetic magic',possessions:'None noted',relationships:'Cuza (companion)',firstAppearance:'Chapter 4',importantEvents:'Named the Kingdom of Silly'},
+    {id:'char_lezo',type:'character',name:'King Lezo',alsoKnown:'',description:'A king who waged war on the sky kingdoms. Defeated by Cuza as the Warrior of Light.',status:'Defeated',location:'Unknown',abilities:'Crimson Annihilation',possessions:'Black throne, dark-crimson dragon',relationships:'Enemies with Cara',firstAppearance:'Chapter 8',importantEvents:'Declared the Age of War, Lost half his kingdom to Cuza'},
+    {id:'nation_silly',type:'nation',name:'Kingdom of Silly',government:'Monarchy (Cuza & Jess)',culture:'Diverse, welcoming, prosperous',population:'Millions',geography:'Expanding territory created by Cuza atomic magic',allies:['Cara','Hewery','Eldermere','Northern Free States'],enemies:['Verdant Alliance','Black Crown (defunct)'],history:'Named by the creature Silly. Grew from half of Lezo\'s kingdom into one of the greatest powers in Elaris through Cuza\'s restructuring magic.',importantLocations:['Royal Castle','Various cities']},
+    {id:'nation_gronsrock',type:'nation',name:'Gronsrock',government:'Oligarchy/City-state',culture:'Brutal dark-fantasy dystopia driven by black-market shard economy',population:'Large',geography:'Walled city',allies:[],enemies:[],history:'A city divided by class. Destroyed by Gren. Later rebuilt.',importantLocations:['City walls','Markets','Tower districts']},
+    {id:'nation_cara',type:'nation',name:'Sky Kingdom of Cara',government:'Monarchy (King Lezo, later reforms)',culture:'Aerial civilization powered by floating lithic engines',population:'Large',geography:'Floating islands above the clouds',allies:['Silly'],enemies:['Lezo (during Age of War)'],history:'Altitude correlates with social class. Powered by lithic engines. Defended during the Age of War by Cuza.',importantLocations:['Floating cities','Sky fleets']},
+    {id:'loc_gronsrock',type:'location',name:'Gronsrock',description:'A walled city with towers rising above crowded streets. Markets overflow with food, weapons, clothing, magical objects and strange creatures.',region:'Elaris',politicalStatus:'Destroyed then rebuilt',majorEvents:['Arrival of Cuza and Gren','Destruction by Gren']},
+    {id:'loc_cara',type:'location',name:'Sky Kingdom of Cara',description:'An airborne civilization with massive islands drifting through the sky, connected by airships.',region:'Skies of Elaris',politicalStatus:'Active kingdom',majorEvents:['Battle during Age of War','Dragon attack']},
+    {id:'loc_silly',type:'location',name:'Kingdom of Silly',description:'A sprawling civilization that appears vibrant, peaceful, and almost utopian. Created and expanded by Cuza\'s atomic magic.',region:'Elaris',politicalStatus:'Major power',majorEvents:['Founding','Expansion','First World War']},
+    {id:'magic_atomic',type:'magic',name:'Atomic Manipulation',user:'Cuza (Acra)',rules:'Control over matter at atomic and subatomic level. Creating mass draws thermal energy. Large-scale manipulation freezes air. Massive alterations create seismic displacements.',limitations:'Consequences scale with usage',costs:'Thermal energy drain, seismic displacement',consequences:'Environmental destruction, energy depletion, seismic events'},
+    {id:'magic_kinetic',type:'magic',name:'Kinetic Splitting',user:'Gren (Gruean)',rules:'Manipulation of particle acceleration, vectors, raw energy, and kinetic force.',limitations:'Has a mathematical upper limit - a genuine ceiling',costs:'Unknown',consequences:'Destructive force proportional to input'},
+    {id:'magic_sky',type:'magic',name:'Sky Magic',user:'Various Cara citizens',rules:'Airborne magic connected to lithic engines',limitations:'Requires training (20 days normal, Cuza: 5 minutes)',costs:'Unknown',consequences:'Flight, aerial combat capability'},
+    {id:'magic_lexicon',type:'magic',name:'Lexicon of Ruin',user:'Jess',rules:'Reality-warping book. Ancient scripts can be translated to activate powerful abilities.',limitations:'Translation requires trading away sensory perception',costs:'Temporary blindness, deafness, loss of taste, loss of touch, or other sensory consequences',consequences:'Permanent sensory loss with heavy use'},
+    {id:'magic_bloodaxe',type:'magic',name:'Cleaver of Blood',user:'Horway',rules:'Massive battle axe forged from blood-reactive lithic metal.',limitations:'Draws upon cellular stamina',costs:'Heavy use drains wielder\'s lifespan',consequences:'Reduced lifespan, physical exhaustion'},
+    {id:'faction_verdant',type:'faction',name:'Verdant Alliance',members:'Thornvale, Mossreach, Elderwood, Greenfall, Wildmere, Roothelm',goals:'Military expansion',allies:[],enemies:['Silly','Cara','Hewery','Eldermere'],history:'Forest kingdoms that launched the First World War against Silly.',politicalInfluence:'Military power'},
+    {id:'faction_peace',type:'faction',name:'Elaris Peace Alliance',members:'All major nations of Elaris',goals:'Maintain peace, prevent war',allies:['All member nations'],enemies:['War-mongering factions'],history:'Created after the First World War. First major meeting interrupted by the Black Crown.',politicalInfluence:'Continental'},
+    {id:'faction_blackcrown',type:'faction',name:'The Black Crown',members:'Unknown',goals:'Unknown',allies:[],enemies:['All nations'],history:'A nation that officially disappeared thirty years before the Peace Alliance. Appeared as a threat at the first major peace meeting but was repelled.',politicalInfluence:'Mysterious, underground'}
+  ];
+
+  for (const entry of entries) {
+    await dbPut('encyclopedia', entry);
+  }
+}
+
+// ==========================================
+// SETTINGS
+// ==========================================
+const defaultSettings = {
+  fontSize: 18,
+  lineHeight: 1.85,
+  fontFamily: 'EB Garamond',
+  readingWidth: 720,
+  theme: 'dark',
+  apiKey: '',
+  apiEndpoint: 'https://api.openai.com/v1/chat/completions',
+  aiModel: 'gpt-4',
+  temperature: 0.9,
+  maxTokens: 2000,
+  contextSize: 4,
+  autoSave: true,
+  autoScroll: false,
+  showPageNumbers: true,
+  showChapterNumbers: true,
+  pageAnimation: true,
+  reducedMotion: false,
+  focusMode: false,
+  compactMode: false
+};
+
+async function loadSettings() {
+  const saved = await dbGet('settings', 'main');
+  return saved ? {...defaultSettings, ...saved.values} : {...defaultSettings};
+}
+
+async function saveSetting(key, value) {
+  const saved = await dbGet('settings', 'main') || {key:'main', values:{}};
+  saved.values[key] = value;
+  await dbPut('settings', saved);
+}
+
+async function getSettings() {
+  return loadSettings();
+}
+
+// ==========================================
+// PAGE MANAGEMENT
+// ==========================================
+async function getPage(chapter, page) {
+  const id = `ch${chapter}_p${page}`;
+  return dbGet('pages', id);
+}
+
+async function savePage(chapter, page, text) {
+  const globalPage = getGlobalPage(chapter, page);
+  const bookId = getChapterBook(chapter);
+  const wordCount = text ? text.split(/\s+/).filter(w => w).length : 0;
+  const existing = await getPage(chapter, page);
+  const now = Date.now();
+
+  await dbPut('pages', {
+    id: `ch${chapter}_p${page}`,
+    chapter,
+    page,
+    globalPage,
+    book: bookId,
+    text: text || '',
+    wordCount,
+    created: existing ? existing.created : now,
+    modified: now,
+    status: text ? 'complete' : 'empty'
+  });
+
+  // Update chapter word count
+  await updateChapterStats(chapter);
+  // Update continuity
+  await updateContinuity(chapter, page, text);
+}
+
+async function updateChapterStats(chapter) {
+  let totalWords = 0;
+  let filledPages = 0;
+  for (let p = 1; p <= PAGES_PER_CHAPTER; p++) {
+    const pg = await getPage(chapter, p);
+    if (pg && pg.text) {
+      totalWords += pg.wordCount || 0;
+      filledPages++;
+    }
+  }
+  const completionPct = Math.round((filledPages / PAGES_PER_CHAPTER) * 100);
+  const status = filledPages === 0 ? 'locked' : filledPages === PAGES_PER_CHAPTER ? 'complete' : 'in_progress';
+
+  await dbPut('chapters', {
+    id: chapter,
+    book: getChapterBook(chapter),
+    title: knownTitles[chapter - 1] || `Chapter ${chapter}`,
+    status,
+    wordCount: totalWords,
+    completionPct,
+    notes: ''
+  });
+
+  // Unlock next chapter if current is complete
+  if (status === 'complete' && chapter < TOTAL_CHAPTERS) {
+    const next = await dbGet('chapters', chapter + 1);
+    if (next && next.status === 'locked') {
+      next.status = 'in_progress';
+      await dbPut('chapters', next);
+    }
+  }
+}
+
+async function getChapterProgress(chapter) {
+  let filled = 0;
+  for (let p = 1; p <= PAGES_PER_CHAPTER; p++) {
+    const pg = await getPage(chapter, p);
+    if (pg && pg.text) filled++;
+  }
+  return {filled, total: PAGES_PER_CHAPTER, pct: Math.round((filled / PAGES_PER_CHAPTER) * 100)};
+}
+
+// ==========================================
+// CONTINUITY ENGINE
+// ==========================================
+async function updateContinuity(chapter, page, text) {
+  const cont = await dbGet('continuity', 'main') || {key:'main'};
+  cont.currentChapter = chapter;
+  cont.currentPage = page;
+  cont.currentBook = getChapterBook(chapter);
+  cont.globalPage = getGlobalPage(chapter, page);
+
+  // Simple text analysis for character/location mentions
+  if (text) {
+    const chars = await dbGetByIndex('encyclopedia', 'type', 'character');
+    for (const c of chars) {
+      if (text.toLowerCase().includes(c.name.toLowerCase())) {
+        if (!cont.characters[c.name]) cont.characters[c.name] = {mentions: 0, lastSeen: ''};
+        cont.characters[c.name].mentions++;
+        cont.characters[c.name].lastSeen = `Ch.${chapter} P.${page}`;
+      }
+    }
+  }
+
+  await dbPut('continuity', cont);
+}
+
+// ==========================================
+// AI GENERATION ENGINE
+// ==========================================
+async function buildGenerationContext(chapter, page) {
+  const settings = await getSettings();
+  const cont = await dbGet('continuity', 'main') || {};
+  const bookId = getChapterBook(chapter);
+  const book = BOOKS.find(b => b.id === bookId);
+
+  // Build compact context
+  let context = `ELARIS SAGA - Book ${bookId}: "${book ? book.title : 'Unknown'}" (${book ? book.arc : ''})\n`;
+  context += `Chapter ${chapter}, Page ${page} of ${PAGES_PER_CHAPTER}\n`;
+  context += `Global Page: ${getGlobalPage(chapter, page)} of ${TOTAL_PAGES}\n\n`;
+
+  // Active characters
+  const activeChars = Object.entries(cont.characters || {}).filter(([name, data]) => data.mentions > 0).slice(0, 10);
+  if (activeChars.length > 0) {
+    context += `ACTIVE CHARACTERS: ${activeChars.map(([n]) => n).join(', ')}\n`;
+  }
+
+  // Recent pages for continuity
+  context += `\nRECENT STORY:\n`;
+  for (let p = Math.max(1, page - 3); p < page; p++) {
+    const pg = await getPage(chapter, p);
+    if (pg && pg.text) {
+      const excerpt = pg.text.slice(-500);
+      context += `[Page ${p}]: ...${excerpt}\n\n`;
+    }
+  }
+
+  // Also include end of previous chapter if at page 1
+  if (page === 1 && chapter > 1) {
+    const prevPg = await getPage(chapter - 1, PAGES_PER_CHAPTER);
+    if (prevPg && prevPg.text) {
+      const excerpt = prevPg.text.slice(-800);
+      context += `[Previous chapter ending]: ...${excerpt}\n\n`;
+    }
+  }
+
+  // Unresolved threads
+  if (cont.mysteries && cont.mysteries.length > 0) {
+    context += `MYSTERIES: ${cont.mysteries.slice(0, 5).join('; ')}\n`;
+  }
+
+  return context;
+}
+
+async function callAI(prompt) {
+  const settings = await getSettings();
+  if (!settings.apiKey) {
+    throw new Error('No API key configured. Go to Settings to add your API key.');
+  }
+
+  const response = await fetch(settings.apiEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${settings.apiKey}`
+    },
+    body: JSON.stringify({
+      model: settings.aiModel,
+      messages: [
+        {role: 'system', content: `You are a masterful fantasy novelist writing the epic saga ELARIS. Write in a cinematic, emotionally powerful style. Use strong dialogue, sensory detail, atmospheric environments, meaningful silence, foreshadowing, and character-driven conflict. Do not summarize. Write actual narrative prose. Each page should be 400-600 words of story text. Do not include any meta-commentary or chapter/page markers.`},
+        {role: 'user', content: prompt}
+      ],
+      temperature: settings.temperature,
+      max_tokens: settings.maxTokens
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`API Error (${response.status}): ${err}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+async function generatePage(chapter, page) {
+  // Save state before generation
+  const existing = await getPage(chapter, page);
+  if (existing && existing.text && existing.status === 'complete') {
+    return {success: false, message: 'Page already has content'};
+  }
+
+  try {
+    const context = await buildGenerationContext(chapter, page);
+    const prompt = `${context}\n\nWrite the next page of the story for Chapter ${chapter}, Page ${page}. Continue the narrative naturally from the context above. Write only the story text, no headers or labels.`;
+
+    const text = await callAI(prompt);
+    const cleaned = text.replace(/^(Page \d+|Chapter \d+|#.*|\*\*.*\*\*)\s*/gm, '').trim();
+
+    await savePage(chapter, page, cleaned);
+    return {success: true, text: cleaned};
+  } catch (err) {
+    return {success: false, message: err.message};
+  }
+}
+
+async function generateNextPage() {
+  const cont = await dbGet('continuity', 'main') || {currentChapter: 1, currentPage: 1};
+  let ch = cont.currentChapter;
+  let pg = cont.currentPage;
+
+  // Find next empty page
+  for (let attempt = 0; attempt < PAGES_PER_CHAPTER * 2; attempt++) {
+    const existing = await getPage(ch, pg);
+    if (!existing || !existing.text || existing.status !== 'complete') break;
+    pg++;
+    if (pg > PAGES_PER_CHAPTER) {
+      pg = 1;
+      ch++;
+      if (ch > TOTAL_CHAPTERS) {
+        toast('Saga complete!');
+        return;
+      }
+    }
+  }
+
+  toast(`Generating Chapter ${ch}, Page ${pg}...`);
+  const result = await generatePage(ch, pg);
+  if (result.success) {
+    toast('Page generated!');
+    if (currentView === 'reader') renderReader();
+  } else {
+    toast(result.message);
+  }
+}
+
+async function generateBatch(count) {
+  const cont = await dbGet('continuity', 'main') || {currentChapter: 1, currentPage: 1};
+  let ch = cont.currentChapter;
+  let pg = cont.currentPage;
+  let generated = 0;
+
+  for (let i = 0; i < count; i++) {
+    // Find next empty
+    for (let attempt = 0; attempt < PAGES_PER_CHAPTER; attempt++) {
+      const existing = await getPage(ch, pg);
+      if (!existing || !existing.text) break;
+      pg++;
+      if (pg > PAGES_PER_CHAPTER) { pg = 1; ch++; }
+      if (ch > TOTAL_CHAPTERS) { toast('Complete!'); return; }
+    }
+
+    toast(`Generating ${i + 1}/${count}... (Ch.${ch} P.${pg})`);
+    const result = await generatePage(ch, pg);
+    if (result.success) {
+      generated++;
+      pg++;
+      if (pg > PAGES_PER_CHAPTER) { pg = 1; ch++; }
+    } else {
+      toast(result.message);
+      break;
+    }
+  }
+
+  toast(`Generated ${generated} pages`);
+  if (currentView === 'reader') renderReader();
+}
+
+async function startGeneration() {
+  const settings = await getSettings();
+  if (!settings.apiKey) {
+    toast('Please set your API key in Settings first');
+    switchView('settings');
+    return;
+  }
+  generating = true;
+  genAbort = false;
+  toast('Auto-generation started');
+
+  while (generating && !genAbort) {
+    await generateNextPage();
+    if (!generating || genAbort) break;
+    await new Promise(r => setTimeout(r, 1000));
+  }
+  toast('Generation stopped');
+}
+
+function stopGeneration() {
+  generating = false;
+  genAbort = true;
+  toast('Stopping...');
+}
+
+// ==========================================
+// IMPORT EXISTING STORY
+// ==========================================
+async function importExistingStory() {
+  const chapters = [
+    {num:0, title:"THE RAIN", content: storyText},
+  ];
+
+  // We'll import the prologue as chapter 1 page 1
+  const existingPage = await getPage(1, 1);
+  if (existingPage && existingPage.text) return; // Already imported
+
+  // Import prologue content into chapter 1
+  const paragraphs = storyText.split('\n\n').filter(p => p.trim());
+  const pagesContent = [];
+  const perPage = Math.ceil(paragraphs.length / PAGES_PER_CHAPTER);
+
+  for (let p = 0; p < PAGES_PER_CHAPTER; p++) {
+    const start = p * perPage;
+    const end = Math.min(start + perPage, paragraphs.length);
+    const pageText = paragraphs.slice(start, end).join('\n\n');
+    if (pageText.trim()) {
+      await savePage(1, p + 1, pageText.trim());
+    }
+  }
+
+  toast('Story imported!');
+}
+
+// ==========================================
+// UI RENDERING
+// ==========================================
+async function enterApp(fresh) {
+  document.getElementById('cover').classList.add('hidden');
+  document.getElementById('app').style.display = 'flex';
+  if (!fresh) {
+    const cont = await dbGet('continuity', 'main');
+    if (cont) {
+      currentChapter = cont.currentChapter || 1;
+      currentPage = cont.currentPage || 1;
+      currentBook = cont.currentBook || 1;
+    }
+  }
+  switchView('reader');
+}
+
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.view === view);
+  });
+
+  const titles = {
+    reader: 'Reader', chapters: 'Chapters', bookmarks: 'Bookmarks', search: 'Search',
+    characters: 'Characters', nations: 'Nations', locations: 'Locations',
+    magic: 'Magic System', factions: 'Factions', notes: 'Notes',
+    dashboard: 'Dashboard', settings: 'Settings'
+  };
+  document.getElementById('topbarTitle').textContent = titles[view] || view;
+
+  const renderers = {
+    reader: renderReader, chapters: renderChapters, bookmarks: renderBookmarks,
+    search: renderSearch, characters: () => renderEncyclopedia('character'),
+    nations: () => renderEncyclopedia('nation'), locations: () => renderEncyclopedia('location'),
+    magic: () => renderEncyclopedia('magic'), factions: () => renderEncyclopedia('faction'),
+    notes: renderNotes, dashboard: renderDashboard, settings: renderSettings
+  };
+
+  (renderers[view] || renderReader)();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+function toggleImmersive() {
+  immersiveMode = !immersiveMode;
+  const sidebar = document.getElementById('sidebar');
+  const topbar = document.querySelector('.topbar');
+  if (immersiveMode) {
+    sidebar.classList.add('collapsed');
+    topbar.style.display = 'none';
+    document.getElementById('immersiveBtn').textContent = 'Exit Focus';
+  } else {
+    topbar.style.display = 'flex';
+    document.getElementById('immersiveBtn').textContent = 'Focus';
+  }
+}
+
+// READER
+async function renderReader() {
+  const content = document.getElementById('content');
+  const pg = await getPage(currentChapter, currentPage);
+  const progress = await getChapterProgress(currentChapter);
+  const bookId = getChapterBook(currentChapter);
+  const book = BOOKS.find(b => b.id === bookId);
+  const globalPage = getGlobalPage(currentChapter, currentPage);
+  const wordCount = pg && pg.text ? pg.text.split(/\s+/).filter(w => w).length : 0;
+  const readTime = Math.ceil(wordCount / 200);
+
+  const text = pg && pg.text ? pg.text : '';
+  const paragraphs = text ? text.split('\n\n').filter(p => p.trim()).map(p => `<p>${p.trim()}</p>`).join('') : '<div class="empty">This page is empty. Generate content or navigate to a filled page.</div>';
+
+  content.innerHTML = `
+    <div class="reader-view">
+      <div class="reader-header">
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:6px;">Book ${bookId}: ${book ? book.title : ''}</div>
+        <h2>Chapter ${currentChapter}${knownTitles[currentChapter - 1] ? ': ' + knownTitles[currentChapter - 1] : ''}</h2>
+        <div class="meta">
+          Page ${currentPage} of ${PAGES_PER_CHAPTER} &middot; Global ${globalPage} / ${TOTAL_PAGES} &middot;
+          ${wordCount} words &middot; ~${readTime} min read
+        </div>
+      </div>
+      <div class="reader-body">${paragraphs}</div>
+      <div class="reader-nav">
+        <button onclick="prevPage()" ${currentPage === 1 && currentChapter === 1 ? 'disabled' : ''}>&#8592; Previous</button>
+        <span style="color:var(--text-dim);font-size:13px;">${progress.filled}/${progress.total} pages (${progress.pct}%)</span>
+        <button onclick="nextPage()" ${currentPage === PAGES_PER_CHAPTER && currentChapter === TOTAL_CHAPTERS ? 'disabled' : ''}>Next &#8594;</button>
+      </div>
+      <div class="progress-bar"><div class="fill" style="width:${(globalPage / TOTAL_PAGES) * 100}%"></div></div>
+    </div>
+  `;
+}
+
+async function nextPage() {
+  if (currentPage < PAGES_PER_CHAPTER) {
+    currentPage++;
+  } else if (currentChapter < TOTAL_CHAPTERS) {
+    currentPage = 1;
+    currentChapter++;
+  }
+  const cont = await dbGet('continuity', 'main') || {};
+  cont.currentChapter = currentChapter;
+  cont.currentPage = currentPage;
+  cont.currentBook = getChapterBook(currentChapter);
+  cont.globalPage = getGlobalPage(currentChapter, currentPage);
+  cont.lastSaved = Date.now();
+  await dbPut('continuity', cont);
+  renderReader();
+  document.getElementById('content').scrollTop = 0;
+}
+
+async function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+  } else if (currentChapter > 1) {
+    currentPage = PAGES_PER_CHAPTER;
+    currentChapter--;
+  }
+  const cont = await dbGet('continuity', 'main') || {};
+  cont.currentChapter = currentChapter;
+  cont.currentPage = currentPage;
+  cont.currentBook = getChapterBook(currentChapter);
+  cont.globalPage = getGlobalPage(currentChapter, currentPage);
+  cont.lastSaved = Date.now();
+  await dbPut('continuity', cont);
+  renderReader();
+  document.getElementById('content').scrollTop = 0;
+}
+
+async function goToPage(chapter, page) {
+  currentChapter = chapter;
+  currentPage = page;
+  const cont = await dbGet('continuity', 'main') || {};
+  cont.currentChapter = chapter;
+  cont.currentPage = page;
+  cont.currentBook = getChapterBook(chapter);
+  await dbPut('continuity', cont);
+  switchView('reader');
+}
+
+// CHAPTERS
+async function renderChapters() {
+  const content = document.getElementById('content');
+  const chapters = await dbGetAll('chapters');
+  const currentBookFilter = currentBook;
+
+  let html = '<div class="book-tabs">';
+  for (const b of BOOKS) {
+    html += `<button class="book-tab ${b.id === currentBookFilter ? 'active' : ''}" onclick="filterBookChapters(${b.id})">Book ${b.id}: ${b.title}</button>`;
+  }
+  html += '</div>';
+
+  html += '<div class="chapter-list">';
+  const filtered = chapters.filter(ch => ch.book === currentBookFilter).sort((a, b) => a.id - b.id);
+  for (const ch of filtered) {
+    const statusClass = ch.status === 'complete' ? 'complete' : ch.status === 'in_progress' ? 'progress' : 'locked';
+    html += `
+      <div class="chapter-item" onclick="goToPage(${ch.id}, 1)">
+        <span class="ch-num">${ch.id}</span>
+        <span class="ch-title">${ch.title || 'Chapter ' + ch.id}</span>
+        <span class="ch-status ${statusClass}">${ch.status}</span>
+      </div>
+    `;
+  }
+  html += '</div>';
+  content.innerHTML = html;
+}
+
+function filterBookChapters(bookId) {
+  currentBook = bookId;
+  renderChapters();
+}
+
+// BOOKMARKS
+async function renderBookmarks() {
+  const content = document.getElementById('content');
+  const bms = await dbGetAll('bookmarks');
+
+  let html = `<div style="margin-bottom:16px;">
+    <button onclick="createBookmark()" style="padding:8px 16px;border:1px solid var(--gold);border-radius:var(--radius);color:var(--gold-bright);">+ Add Bookmark</button>
+  </div>`;
+
+  if (bms.length === 0) {
+    html += '<div class="empty" style="text-align:center;color:var(--text-dim);padding:40px;">No bookmarks yet</div>';
+  } else {
+    for (const bm of bms.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))) {
+      html += `
+        <div class="bm-item" onclick="goToPage(${bm.chapter}, ${bm.page})">
+          <div style="flex:1;">
+            <div class="bm-title">${bm.title || 'Bookmark'}</div>
+            <div class="bm-note">${bm.note || ''}</div>
+            <div class="bm-meta">Ch.${bm.chapter} P.${bm.page} &middot; ${new Date(bm.timestamp).toLocaleDateString()}</div>
+          </div>
+          <button onclick="event.stopPropagation();deleteBookmark(${bm.id})" style="color:var(--danger);padding:4px 8px;">&#10005;</button>
+        </div>
+      `;
+    }
+  }
+  content.innerHTML = html;
+}
+
+async function createBookmark() {
+  showModal(`
+    <h3>New Bookmark</h3>
+    <label>Title</label><input id="bmTitle" placeholder="Bookmark title">
+    <label>Note</label><textarea id="bmNote" rows="3" placeholder="Optional note"></textarea>
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="primary" onclick="saveBookmark()">Save</button>
+    </div>
+  `);
+}
+
+async function saveBookmark() {
+  const title = document.getElementById('bmTitle').value;
+  const note = document.getElementById('bmNote').value;
+  await dbPut('bookmarks', {
+    chapter: currentChapter,
+    page: currentPage,
+    globalPage: getGlobalPage(currentChapter, currentPage),
+    title, note,
+    timestamp: Date.now()
+  });
+  closeModal();
+  toast('Bookmark saved');
+  if (currentView === 'bookmarks') renderBookmarks();
+}
+
+async function deleteBookmark(id) {
+  await dbDelete('bookmarks', id);
+  renderBookmarks();
+}
+
+// NOTES
+async function renderNotes() {
+  const content = document.getElementById('content');
+  const notes = await dbGetAll('notes');
+
+  let html = `<div style="margin-bottom:16px;">
+    <button onclick="createNote()" style="padding:8px 16px;border:1px solid var(--gold);border-radius:var(--radius);color:var(--gold-bright);">+ Add Note</button>
+  </div>`;
+
+  if (notes.length === 0) {
+    html += '<div class="empty" style="text-align:center;color:var(--text-dim);padding:40px;">No notes yet</div>';
+  } else {
+    for (const note of notes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))) {
+      html += `
+        <div class="bm-item">
+          <div style="flex:1;">
+            <div class="bm-title">${note.title || 'Note'}</div>
+            <div class="bm-note">${note.content || ''}</div>
+            <div class="bm-meta">Ch.${note.chapter} P.${note.page} &middot; ${new Date(note.timestamp).toLocaleDateString()}</div>
+          </div>
+          <button onclick="deleteNote(${note.id})" style="color:var(--danger);padding:4px 8px;">&#10005;</button>
+        </div>
+      `;
+    }
+  }
+  content.innerHTML = html;
+}
+
+async function createNote() {
+  showModal(`
+    <h3>New Note</h3>
+    <label>Title</label><input id="noteTitle" placeholder="Note title">
+    <label>Note</label><textarea id="noteContent" rows="5" placeholder="Your note"></textarea>
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="primary" onclick="saveNote()">Save</button>
+    </div>
+  `);
+}
+
+async function saveNote() {
+  const title = document.getElementById('noteTitle').value;
+  const content = document.getElementById('noteContent').value;
+  await dbPut('notes', {
+    chapter: currentChapter,
+    page: currentPage,
+    title, content,
+    timestamp: Date.now()
+  });
+  closeModal();
+  toast('Note saved');
+  if (currentView === 'notes') renderNotes();
+}
+
+async function deleteNote(id) {
+  await dbDelete('notes', id);
+  renderNotes();
+}
+
+// SEARCH
+async function renderSearch() {
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="search-box">
+      <span class="search-icon">&#128269;</span>
+      <input id="searchInput" placeholder="Search chapters, pages, characters, locations..." onkeyup="performSearch()" autofocus>
+    </div>
+    <div id="searchResults"></div>
+  `;
+  document.getElementById('searchInput').focus();
+}
+
+async function performSearch() {
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  const results = document.getElementById('searchResults');
+  if (!query || query.length < 2) { results.innerHTML = ''; return; }
+
+  let html = '';
+
+  // Search chapters
+  const chapters = await dbGetAll('chapters');
+  for (const ch of chapters) {
+    if (ch.title && ch.title.toLowerCase().includes(query)) {
+      html += `<div class="search-result" onclick="goToPage(${ch.id}, 1)">
+        <div class="sr-title">Chapter ${ch.id}: ${ch.title}</div>
+        <div class="sr-context">Chapter match</div>
+      </div>`;
+    }
+  }
+
+  // Search encyclopedia
+  const entries = await dbGetAll('encyclopedia');
+  for (const e of entries) {
+    if (e.name.toLowerCase().includes(query) || (e.description && e.description.toLowerCase().includes(query))) {
+      html += `<div class="search-result" onclick="viewEncyclopediaEntry('${e.id}')">
+        <div class="sr-title">${e.name} (${e.type})</div>
+        <div class="sr-context">${e.description ? e.description.slice(0, 120) + '...' : ''}</div>
+      </div>`;
+    }
+  }
+
+  // Search page content (limited for performance)
+  const pages = await dbGetAll('pages');
+  let pageResults = 0;
+  for (const pg of pages) {
+    if (pg.text && pg.text.toLowerCase().includes(query) && pageResults < 20) {
+      const idx = pg.text.toLowerCase().indexOf(query);
+      const start = Math.max(0, idx - 40);
+      const end = Math.min(pg.text.length, idx + query.length + 40);
+      const excerpt = (start > 0 ? '...' : '') + pg.text.slice(start, end) + (end < pg.text.length ? '...' : '');
+      html += `<div class="search-result" onclick="goToPage(${pg.chapter}, ${pg.page})">
+        <div class="sr-title">Ch.${pg.chapter} P.${pg.page}</div>
+        <div class="sr-context">${excerpt.replace(new RegExp(query, 'gi'), m => '<mark>' + m + '</mark>')}</div>
+      </div>`;
+      pageResults++;
+    }
+  }
+
+  if (!html) html = '<div style="text-align:center;color:var(--text-dim);padding:40px;">No results found</div>';
+  results.innerHTML = html;
+}
+
+// ENCYCLOPEDIA
+async function renderEncyclopedia(type) {
+  const content = document.getElementById('content');
+  const entries = await dbGetByIndex('encyclopedia', 'type', type);
+
+  let html = `<div style="margin-bottom:16px;">
+    <button onclick="createEncyclopediaEntry('${type}')" style="padding:8px 16px;border:1px solid var(--gold);border-radius:var(--radius);color:var(--gold-bright);">+ Add ${type.charAt(0).toUpperCase() + type.slice(1)}</button>
+  </div>`;
+  html += '<div class="entry-list">';
+  for (const e of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+    html += `
+      <div class="entry-item" onclick="viewEncyclopediaEntry('${e.id}')">
+        <span class="entry-name">${e.name}</span>
+        <span class="entry-meta">${e.alsoKnown || e.status || ''}</span>
+      </div>
+    `;
+  }
+  if (entries.length === 0) {
+    html += '<div style="text-align:center;color:var(--text-dim);padding:40px;">No entries yet</div>';
+  }
+  html += '</div>';
+  html += '<div id="entryDetail"></div>';
+  content.innerHTML = html;
+}
+
+async function viewEncyclopediaEntry(id) {
+  const entry = await dbGet('encyclopedia', id);
+  if (!entry) return;
+
+  if (currentView !== 'characters' && currentView !== 'nations' && currentView !== 'locations' && currentView !== 'magic' && currentView !== 'factions') {
+    switchView(entry.type === 'character' ? 'characters' : entry.type === 'nation' ? 'nations' : entry.type === 'location' ? 'locations' : entry.type === 'magic' ? 'magic' : 'factions');
+  }
+
+  const detail = document.getElementById('entryDetail');
+  if (!detail) return;
+
+  let html = `<div class="entry-detail">
+    <h3>${entry.name}</h3>`;
+
+  const fields = {
+    'Also Known As': entry.alsoKnown,
+    'Description': entry.description,
+    'Status': entry.status,
+    'Location': entry.location,
+    'Abilities': entry.abilities,
+    'Possessions': entry.possessions,
+    'Relationships': entry.relationships,
+    'Government': entry.government,
+    'Culture': entry.culture,
+    'Population': entry.population,
+    'Geography': entry.geography,
+    'Allies': Array.isArray(entry.allies) ? entry.allies.join(', ') : entry.allies,
+    'Enemies': Array.isArray(entry.enemies) ? entry.enemies.join(', ') : entry.enemies,
+    'History': entry.history,
+    'Rules': entry.rules,
+    'Limitations': entry.limitations,
+    'Costs': entry.costs,
+    'Consequences': entry.consequences,
+    'Members': entry.members,
+    'Goals': entry.goals,
+    'Political Influence': entry.politicalInfluence,
+    'First Appearance': entry.firstAppearance,
+    'Important Events': entry.importantEvents,
+    'Major Events': entry.majorEvents,
+    'Important Locations': Array.isArray(entry.importantLocations) ? entry.importantLocations.join(', ') : entry.importantLocations,
+    'User': entry.user,
+    'Description': entry.description
+  };
+
+  for (const [label, value] of Object.entries(fields)) {
+    if (value) {
+      html += `<div class="detail-row"><span class="dr-label">${label}:</span><span>${value}</span></div>`;
+    }
+  }
+
+  html += `
+    <div style="margin-top:16px;display:flex;gap:8px;">
+      <button onclick="editEncyclopediaEntry('${entry.id}')" style="padding:6px 12px;border:1px solid var(--panel-border);border-radius:var(--radius);font-size:13px;">Edit</button>
+      <button onclick="deleteEncyclopediaEntry('${entry.id}')" style="padding:6px 12px;border:1px solid var(--danger);border-radius:var(--radius);font-size:13px;color:var(--danger);">Delete</button>
+    </div>
+  </div>`;
+
+  detail.innerHTML = html;
+  detail.scrollIntoView({behavior: 'smooth'});
+}
+
+async function createEncyclopediaEntry(type) {
+  showModal(`
+    <h3>New ${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+    <label>Name</label><input id="encName" placeholder="Name">
+    <label>Description</label><textarea id="encDesc" rows="3" placeholder="Description"></textarea>
+    <label>Status</label><input id="encStatus" placeholder="Status">
+    <label>Location</label><input id="encLocation" placeholder="Location">
+    <label>Abilities</label><input id="encAbilities" placeholder="Abilities">
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="primary" onclick="saveEncyclopediaEntry('${type}')">Save</button>
+    </div>
+  `);
+}
+
+async function saveEncyclopediaEntry(type, existingId) {
+  const entry = {
+    id: existingId || `enc_${type}_${Date.now()}`,
+    type,
+    name: document.getElementById('encName').value,
+    description: document.getElementById('encDesc').value,
+    status: document.getElementById('encStatus').value || '',
+    location: document.getElementById('encLocation').value || '',
+    abilities: document.getElementById('encAbilities').value || ''
+  };
+  await dbPut('encyclopedia', entry);
+  closeModal();
+  toast('Entry saved');
+  renderEncyclopedia(type);
+}
+
+async function editEncyclopediaEntry(id) {
+  const entry = await dbGet('encyclopedia', id);
+  if (!entry) return;
+  showModal(`
+    <h3>Edit ${entry.name}</h3>
+    <label>Name</label><input id="encName" value="${entry.name || ''}">
+    <label>Description</label><textarea id="encDesc" rows="3">${entry.description || ''}</textarea>
+    <label>Status</label><input id="encStatus" value="${entry.status || ''}">
+    <label>Location</label><input id="encLocation" value="${entry.location || ''}">
+    <label>Abilities</label><input id="encAbilities" value="${entry.abilities || ''}">
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="primary" onclick="saveEncyclopediaEntry('${entry.type}', '${entry.id}')">Save</button>
+    </div>
+  `);
+}
+
+async function deleteEncyclopediaEntry(id) {
+  const entry = await dbGet('encyclopedia', id);
+  if (!entry) return;
+  await dbDelete('encyclopedia', id);
+  toast('Entry deleted');
+  renderEncyclopedia(entry.type);
+}
+
+// DASHBOARD
+async function renderDashboard() {
+  const content = document.getElementById('content');
+  const chapters = await dbGetAll('chapters');
+  const pages = await dbGetAll('pages');
+  const cont = await dbGet('continuity', 'main') || {};
+  const bms = await dbGetAll('bookmarks');
+  const notes = await dbGetAll('notes');
+  const enc = await dbGetAll('encyclopedia');
+
+  const completedChapters = chapters.filter(c => c.status === 'complete').length;
+  const completedPages = pages.filter(p => p.status === 'complete').length;
+  const totalWords = pages.reduce((sum, p) => sum + (p.wordCount || 0), 0);
+  const readTime = Math.ceil(totalWords / 200);
+  const charsDiscovered = enc.filter(e => e.type === 'character').length;
+  const nationsDiscovered = enc.filter(e => e.type === 'nation').length;
+  const locsDiscovered = enc.filter(e => e.type === 'location').length;
+
+  content.innerHTML = `
+    <h2 style="font-family:'Cormorant Garamond',serif;color:var(--gold-bright);margin-bottom:20px;">Story Dashboard</h2>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num">${cont.currentBook || 1}</div><div class="lbl">Current Book</div></div>
+      <div class="stat-box"><div class="num">${cont.currentChapter || 1}</div><div class="lbl">Current Chapter</div></div>
+      <div class="stat-box"><div class="num">${cont.globalPage || 1}</div><div class="lbl">Global Page</div></div>
+      <div class="stat-box"><div class="num">${Math.round((completedPages / TOTAL_PAGES) * 100)}%</div><div class="lbl">Complete</div></div>
+      <div class="stat-box"><div class="num">${completedChapters}</div><div class="lbl">Chapters Done</div></div>
+      <div class="stat-box"><div class="num">${completedPages}</div><div class="lbl">Pages Done</div></div>
+      <div class="stat-box"><div class="num">${totalWords.toLocaleString()}</div><div class="lbl">Total Words</div></div>
+      <div class="stat-box"><div class="num">${readTime}m</div><div class="lbl">Read Time</div></div>
+      <div class="stat-box"><div class="num">${charsDiscovered}</div><div class="lbl">Characters</div></div>
+      <div class="stat-box"><div class="num">${nationsDiscovered}</div><div class="lbl">Nations</div></div>
+      <div class="stat-box"><div class="num">${locsDiscovered}</div><div class="lbl">Locations</div></div>
+      <div class="stat-box"><div class="num">${bms.length}</div><div class="lbl">Bookmarks</div></div>
+      <div class="stat-box"><div class="num">${notes.length}</div><div class="lbl">Notes</div></div>
+    </div>
+    <div class="progress-bar" style="margin:20px 0;"><div class="fill" style="width:${(completedPages / TOTAL_PAGES) * 100}%"></div></div>
+    <div style="color:var(--text-dim);font-size:14px;text-align:center;">${completedPages} / ${TOTAL_PAGES} pages &middot; ${completedChapters} / ${TOTAL_CHAPTERS} chapters &middot; Book ${cont.currentBook || 1} of 30</div>
+  `;
+}
+
+// SETTINGS
+async function renderSettings() {
+  const content = document.getElementById('content');
+  const s = await getSettings();
+
+  content.innerHTML = `
+    <h2 style="font-family:'Cormorant Garamond',serif;color:var(--gold-bright);margin-bottom:20px;">Settings</h2>
+
+    <div class="settings-group">
+      <h3>Reading</h3>
+      <div class="setting-row">
+        <label>Font Size</label>
+        <input type="range" min="14" max="28" value="${s.fontSize}" onchange="updateSetting('fontSize', parseInt(this.value)); this.nextElementSibling.textContent=this.value+'px'">
+        <span>${s.fontSize}px</span>
+      </div>
+      <div class="setting-row">
+        <label>Line Height</label>
+        <input type="range" min="1.4" max="2.4" step="0.1" value="${s.lineHeight}" onchange="updateSetting('lineHeight', parseFloat(this.value)); this.nextElementSibling.textContent=this.value">
+        <span>${s.lineHeight}</span>
+      </div>
+      <div class="setting-row">
+        <label>Reading Width (px)</label>
+        <input type="number" value="${s.readingWidth}" onchange="updateSetting('readingWidth', parseInt(this.value))">
+      </div>
+      <div class="setting-row">
+        <label>Focus Mode</label>
+        <select onchange="updateSetting('focusMode', this.value==='true')">
+          <option value="false" ${!s.focusMode?'selected':''}>Off</option>
+          <option value="true" ${s.focusMode?'selected':''}>On</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>AI Generation</h3>
+      <div class="setting-row">
+        <label>API Endpoint</label>
+        <input type="text" value="${s.apiEndpoint}" onchange="updateSetting('apiEndpoint', this.value)">
+      </div>
+      <div class="setting-row">
+        <label>API Key</label>
+        <input type="password" value="${s.apiKey}" onchange="updateSetting('apiKey', this.value)" placeholder="sk-...">
+      </div>
+      <div class="setting-row">
+        <label>AI Model</label>
+        <input type="text" value="${s.aiModel}" onchange="updateSetting('aiModel', this.value)">
+      </div>
+      <div class="setting-row">
+        <label>Temperature</label>
+        <input type="range" min="0" max="2" step="0.1" value="${s.temperature}" onchange="updateSetting('temperature', parseFloat(this.value)); this.nextElementSibling.textContent=this.value">
+        <span>${s.temperature}</span>
+      </div>
+      <div class="setting-row">
+        <label>Max Output Tokens</label>
+        <input type="number" value="${s.maxTokens}" onchange="updateSetting('maxTokens', parseInt(this.value))">
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Data</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="exportJSON()" style="padding:8px 16px;border:1px solid var(--panel-border);border-radius:var(--radius);">Export JSON</button>
+        <button onclick="exportTXT()" style="padding:8px 16px;border:1px solid var(--panel-border);border-radius:var(--radius);">Export TXT</button>
+        <button onclick="exportMarkdown()" style="padding:8px 16px;border:1px solid var(--panel-border);border-radius:var(--radius);">Export Markdown</button>
+        <button onclick="importData()" style="padding:8px 16px;border:1px solid var(--panel-border);border-radius:var(--radius);">Import JSON</button>
+        <button onclick="importExistingStory()" style="padding:8px 16px;border:1px solid var(--panel-border);border-radius:var(--radius);">Import Prologue</button>
+        <button onclick="resetData()" style="padding:8px 16px;border:1px solid var(--danger);border-radius:var(--radius);color:var(--danger);">Reset All Data</button>
+      </div>
+    </div>
+  `;
+}
+
+async function updateSetting(key, value) {
+  await saveSetting(key, value);
+  toast('Setting saved');
+}
+
+// ==========================================
+// EXPORT / IMPORT
+// ==========================================
+async function exportJSON() {
+  const data = {
+    version: 1,
+    timestamp: Date.now(),
+    books: await dbGetAll('books'),
+    chapters: await dbGetAll('chapters'),
+    pages: await dbGetAll('pages'),
+    continuity: await dbGet('continuity', 'main'),
+    encyclopedia: await dbGetAll('encyclopedia'),
+    bookmarks: await dbGetAll('bookmarks'),
+    notes: await dbGetAll('notes'),
+    settings: await dbGet('settings', 'main')
+  };
+  downloadFile(JSON.stringify(data, null, 2), 'elaris-backup.json', 'application/json');
+  toast('JSON exported');
+}
+
+async function exportTXT() {
+  let txt = 'ELÃRIS - A 30-BOOK SAGA\n\n';
+  const chapters = await dbGetAll('chapters');
+  for (const ch of chapters.sort((a, b) => a.id - b.id)) {
+    txt += `\n${'='.repeat(60)}\n`;
+    txt += `CHAPTER ${ch.id}: ${ch.title}\n`;
+    txt += `${'='.repeat(60)}\n\n`;
+    for (let p = 1; p <= PAGES_PER_CHAPTER; p++) {
+      const pg = await getPage(ch.id, p);
+      if (pg && pg.text) {
+        txt += pg.text + '\n\n';
+      }
+    }
+  }
+  downloadFile(txt, 'elaris-novel.txt', 'text/plain');
+  toast('TXT exported');
+}
+
+async function exportMarkdown() {
+  let md = '# ELÃRIS - A 30-BOOK SAGA\n\n';
+  const chapters = await dbGetAll('chapters');
+  for (const ch of chapters.sort((a, b) => a.id - b.id)) {
+    md += `\n---\n\n## Chapter ${ch.id}: ${ch.title}\n\n`;
+    for (let p = 1; p <= PAGES_PER_CHAPTER; p++) {
+      const pg = await getPage(ch.id, p);
+      if (pg && pg.text) {
+        md += pg.text + '\n\n';
+      }
+    }
+  }
+  downloadFile(md, 'elaris-novel.md', 'text/markdown');
+  toast('Markdown exported');
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    try {
+      const data = JSON.parse(text);
+      if (data.books) for (const b of data.books) await dbPut('books', b);
+      if (data.chapters) for (const c of data.chapters) await dbPut('chapters', c);
+      if (data.pages) for (const p of data.pages) await dbPut('pages', p);
+      if (data.continuity) await dbPut('continuity', data.continuity);
+      if (data.encyclopedia) for (const e of data.encyclopedia) await dbPut('encyclopedia', e);
+      if (data.bookmarks) for (const b of data.bookmarks) await dbPut('bookmarks', b);
+      if (data.notes) for (const n of data.notes) await dbPut('notes', n);
+      if (data.settings) await dbPut('settings', data.settings);
+      toast('Data imported!');
+      switchView(currentView);
+    } catch (err) {
+      toast('Import failed: ' + err.message);
+    }
+  };
+  input.click();
+}
+
+async function resetData() {
+  showModal(`
+    <h3>Reset All Data</h3>
+    <p style="margin-bottom:16px;">This will permanently delete all story content, settings, bookmarks, notes, and encyclopedia entries. This cannot be undone.</p>
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button style="color:var(--danger);border:1px solid var(--danger);" onclick="confirmReset()">Reset Everything</button>
+    </div>
+  `);
+}
+
+async function confirmReset() {
+  const stores = ['pages', 'chapters', 'books', 'continuity', 'encyclopedia', 'bookmarks', 'notes', 'settings'];
+  for (const store of stores) {
+    const all = await dbGetAll(store);
+    for (const item of all) {
+      await dbDelete(store, item.id !== undefined ? item.id : item.key);
+    }
+  }
+  closeModal();
+  await initializeNovel();
+  toast('All data reset');
+  switchView('reader');
+}
+
+// ==========================================
+// UTILITIES
+// ==========================================
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function showModal(html) {
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  if (e.key === ' ') {
+    e.preventDefault();
+    saveProgress();
+    return;
+  }
+
+  if (currentView === 'reader') {
+    if (e.key === 'ArrowRight' || e.key === 'l') nextPage();
+    if (e.key === 'ArrowLeft' || e.key === 'h') prevPage();
+  }
+  if (e.key === 'f') toggleFullscreen();
+  if (e.key === 'Escape') {
+    closeModal();
+    if (immersiveMode) toggleImmersive();
+  }
+});
+
+// ==========================================
+// SAVE PROGRESS
+// ==========================================
+async function saveProgress() {
+  const cont = await dbGet('continuity', 'main') || {};
+  cont.currentChapter = currentChapter;
+  cont.currentPage = currentPage;
+  cont.currentBook = getChapterBook(currentChapter);
+  cont.globalPage = getGlobalPage(currentChapter, currentPage);
+  cont.lastSaved = Date.now();
+  await dbPut('continuity', cont);
+  const book = BOOKS.find(b => b.id === cont.currentBook);
+  toast(`Saved: Book ${cont.currentBook}, Ch.${cont.currentChapter}, P.${cont.currentPage}`);
+}
+
+// ==========================================
+// BOOT
+// ==========================================
+async function boot() {
+  await openDB();
+  await initializeNovel();
+  await importExistingStory();
+
+  // Check for saved progress
+  const cont = await dbGet('continuity', 'main');
+  if (cont && cont.lastSaved) {
+    const book = BOOKS.find(b => b.id === cont.currentBook);
+    document.getElementById('continueBtn').style.display = 'block';
+    document.getElementById('lastReadInfo').style.display = 'block';
+    document.getElementById('lastReadInfo').textContent =
+      `Last read: Book ${cont.currentBook}${book ? ': ' + book.title : ''} â€” Chapter ${cont.currentChapter}, Page ${cont.currentPage}`;
+  }
+}
+
+boot().catch(err => {
+  console.error('Boot failed:', err);
+  document.body.innerHTML = `<div style="color:red;padding:40px;font-family:monospace;">Boot Error: ${err.message}</div>`;
+});
+</script>
+</body>
+</html>
