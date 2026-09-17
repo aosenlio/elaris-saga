@@ -192,7 +192,6 @@ mark{ background:rgba(216,178,94,.35); color:inherit; border-radius:2px;}
     <div class="ornament"></div>
     <div class="cover-actions">
       <button class="btn btn-gold" id="btn-start-reading">Begin Reading</button>
-      <button class="btn" id="btn-continue-story">Continue the Story</button>
     </div>
     <div class="cover-note" id="cover-note">Loading your saga…</div>
   </div>
@@ -347,7 +346,6 @@ const State = {
   bookmarks: [], notes: [],
   view: "reader",
   sampleFn: null, downloadsFn: null,
-  genRunning: false, genStop: false,
 };
 
 function emptyPage(){ return {text:"", wordCount:0, status:"locked"}; }
@@ -436,81 +434,6 @@ async function persistSettings(){ await Store.set("elaris/settings", State.setti
 async function persistBookmarks(){ await Store.set("elaris/bookmarks", {list: State.bookmarks}); }
 async function persistNotes(){ await Store.set("elaris/notes", {list: State.notes}); }
 
-/* ---------------- Generation engine ---------------- */
-async function ensureSample(){
-  if(State.sampleFn) return State.sampleFn;
-  try{ State.sampleFn = await claude.use("sample"); }catch(e){ State.sampleFn = null; }
-  return State.sampleFn;
-}
-function recentContext(chNum, pageIdx, maxChars){
-  // gather the most recent written text up to (chNum,pageIdx) for direct continuation
-  let text = "";
-  outer:
-  for(let c=chNum; c>=1; c--){
-    const chapter = State.chapters[c-1];
-    const upto = (c===chNum) ? pageIdx : chapter.pages.length;
-    for(let p=upto-1; p>=0; p--){
-      const pg = chapter.pages[p];
-      if(pg.status==="complete" && pg.text){
-        text = pg.text + "\n\n" + text;
-        if(text.length > maxChars) break outer;
-      }
-    }
-  }
-  return text.slice(-maxChars);
-}
-function buildPrompt(chNum, pageIdx){
-  const chapter = State.chapters[chNum-1];
-  const book = bookForChapter(chNum);
-  const isFirstPageOfBook = (chNum===book.chStart && pageIdx===0);
-  const recent = recentContext(chNum, pageIdx, 3200);
-  const logTail = State.continuity.log.slice(-8).join("\n");
-  return `You are continuing the fantasy saga ELÁRIS as its author. Follow the canon bible exactly; do not contradict it. Write ONLY the next page of prose — no headers, no meta-commentary, no markdown, just the story text as plain paragraphs separated by blank lines.
-
-${CANON_BIBLE}
-
-CURRENT POSITION: Book ${book.num} ("${book.title}"), Chapter ${chNum} ("${chapter.title}"), arc "${chapter.arc}", page ${pageIdx+1} of ${PAGES_PER_CHAPTER}.
-${isFirstPageOfBook ? "This is the opening page of a new book — establish its scene clearly, but continue directly from the story so far; do not restart the saga." : ""}
-
-RECENT CONTINUITY NOTES (short log, oldest to newest):
-${logTail || "(none yet — this is early in the saga)"}
-
-MOST RECENT WRITTEN TEXT (continue directly from here, do not repeat it):
-${recent || "(no prior text — write an evocative opening consistent with the canon bible)"}
-
-Write the next page: roughly 220–380 words, cinematic but economical, in the established tone. Vary pacing appropriately — not every page needs a battle or a cliffhanger. End at a natural pause, not necessarily a cliffhanger.`;
-}
-async function generateOnePage(chNum, pageIdx, onStatus){
-  const sample = await ensureSample();
-  if(!sample) throw {code:"not_granted", message:"AI generation isn't available in this view."};
-  const prompt = buildPrompt(chNum, pageIdx);
-  onStatus && onStatus("Thinking…");
-  const result = await sample(prompt, {
-    modelTier:"default", cache:false,
-    onText: (u)=> onStatus && onStatus(u.text)
-  });
-  const text = result.text.trim();
-  const chapter = State.chapters[chNum-1];
-  chapter.pages[pageIdx] = {text, wordCount: text.split(/\s+/).filter(Boolean).length, status:"complete"};
-  const snippet = text.replace(/\s+/g," ").slice(0,140);
-  State.continuity.log.push(`Ch.${chNum} p.${pageIdx+1}: ${snippet}${text.length>140?"…":""}`);
-  if(State.continuity.log.length>60) State.continuity.log = State.continuity.log.slice(-60);
-  State.continuity.curChapter = chNum; State.continuity.curPage = pageIdx;
-  queueSaveChapters();
-  await persistContinuity();
-  return chapter.pages[pageIdx];
-}
-function nextEmptyPosition(fromChNum, fromPageIdx){
-  for(let c=fromChNum;c<=TOTAL_CHAPTERS;c++){
-    const chapter = State.chapters[c-1];
-    const startP = (c===fromChNum)? fromPageIdx : 0;
-    for(let p=startP;p<PAGES_PER_CHAPTER;p++){
-      if(chapter.pages[p].status!=="complete") return {chNum:c, pageIdx:p};
-    }
-  }
-  return null;
-}
-
 /* ---------------- UI ---------------- */
 const $app = document.getElementById("app");
 let currentReading = {chNum:1, pageIdx:0};
@@ -540,7 +463,6 @@ function render(){
       </div>
       <ul class="navlist">
         ${navItem("reader","📖","Read")}
-        ${navItem("continue","✒️","Continue Story")}
         ${navItem("chapters","📚","Chapters")}
         ${navItem("bookmarks","🔖","Bookmarks")}
         ${navItem("search","🔍","Search")}
@@ -567,7 +489,6 @@ function render(){
   document.getElementById("btn-toggle-sidebar").onclick = ()=> document.getElementById("sidebar").classList.toggle("mobile-open");
   const body = document.getElementById("view-body");
   if(v==="reader") renderReader(body);
-  else if(v==="continue") renderContinue(body);
   else if(v==="chapters") renderChapters(body);
   else if(v==="bookmarks") renderBookmarks(body);
   else if(v==="search") renderSearch(body);
@@ -581,7 +502,7 @@ function navItem(id, icon, label){
   return `<li><button class="navbtn ${State.view===id?'active':''}" data-nav="${id}"><span class="ic">${icon}</span>${label}</button></li>`;
 }
 function titleFor(v){
-  return {reader:"Reader", continue:"Continue the Story", chapters:"Chapters & Books", bookmarks:"Bookmarks",
+  return {reader:"Reader", chapters:"Chapters & Books", bookmarks:"Bookmarks",
     search:"Search", characters:"World Encyclopedia", notes:"Notes", stats:"Statistics", settings:"Settings"}[v] || "";
 }
 document.addEventListener("click", (e)=>{
@@ -590,12 +511,34 @@ document.addEventListener("click", (e)=>{
 });
 
 /* ----- Reader view ----- */
+function findNextReadable(chNum, pageIdx){
+  for(let c=chNum;c<=TOTAL_CHAPTERS;c++){
+    const chapter = State.chapters[c-1];
+    const startP = (c===chNum)? pageIdx+1 : 0;
+    for(let p=startP;p<PAGES_PER_CHAPTER;p++){
+      if(chapter.pages[p].status==="complete") return {chNum:c, pageIdx:p};
+    }
+  }
+  return null;
+}
+function findPrevReadable(chNum, pageIdx){
+  for(let c=chNum;c>=1;c--){
+    const chapter = State.chapters[c-1];
+    const upto = (c===chNum)? pageIdx-1 : PAGES_PER_CHAPTER-1;
+    for(let p=upto;p>=0;p--){
+      if(chapter.pages[p].status==="complete") return {chNum:c, pageIdx:p};
+    }
+  }
+  return null;
+}
 function renderReader(body){
   const {chNum, pageIdx} = currentReading;
   const chapter = State.chapters[chNum-1];
   const book = bookForChapter(chNum);
   const page = chapter.pages[pageIdx];
   const gp = globalPageIndex(chNum,pageIdx)+1;
+  const nextPos = findNextReadable(chNum, pageIdx);
+  const prevPos = findPrevReadable(chNum, pageIdx);
   body.innerHTML = `
     <div class="reader-wrap">
       <div class="reader-crumb">Book ${book.num} · ${book.title} — Arc: ${book.arc}</div>
@@ -606,28 +549,26 @@ function renderReader(body){
         <div class="page-text">${page.text.split("\n\n").map(p=>`<p>${escapeHtml(p)}</p>`).join("")}</div>
         <div style="text-align:center;color:var(--text-dim);font-size:.78rem;margin-top:18px;">${page.wordCount} words · ~${Math.max(1,Math.round(page.wordCount/220))} min read</div>
       ` : `
-        <div class="empty-page">
-          <h3>This page hasn't been written yet</h3>
-          <p>Generate it now, or jump to the last written page.</p>
-          <div class="cover-actions" style="margin-top:16px;">
-            <button class="btn btn-gold" id="btn-gen-this-page">Generate This Page</button>
-          </div>
+        <div class="empty-state" style="margin-top:60px;">
+          <h3>End of available story</h3>
+          <p>You've reached the end of the written chapters. Use Previous to go back.</p>
         </div>
       `}
       <div class="reader-nav">
-        <button class="btn btn-ghost" id="btn-prev-page" ${gp<=1?"disabled":""}>← Previous</button>
+        <button class="btn btn-ghost" id="btn-prev-page" ${!prevPos?"disabled":""}>← Previous</button>
         <span class="pagenum">Ch. ${chNum} / ${TOTAL_CHAPTERS}</span>
-        <button class="btn btn-ghost" id="btn-next-page" ${gp>=TOTAL_PAGES?"disabled":""}>Next →</button>
+        <button class="btn btn-ghost" id="btn-next-page" ${!nextPos?"disabled":""}>Next →</button>
       </div>
       <div class="gen-row" style="max-width:68ch;margin:14px auto 0;justify-content:center;">
         <button class="btn" id="btn-bookmark-here">🔖 Bookmark this page</button>
       </div>
     </div>
   `;
-  document.getElementById("btn-prev-page")?.addEventListener("click", ()=> gotoGlobal(gp-2));
-  document.getElementById("btn-next-page")?.addEventListener("click", ()=> gotoGlobal(gp));
-  document.getElementById("btn-gen-this-page")?.addEventListener("click", async ()=>{
-    await runGeneration(chNum, pageIdx, 1, renderReader.bind(null, body));
+  document.getElementById("btn-prev-page")?.addEventListener("click", ()=>{
+    if(prevPos){ currentReading = prevPos; localStorage.setItem("elaris::lastread", JSON.stringify(currentReading)); render(); }
+  });
+  document.getElementById("btn-next-page")?.addEventListener("click", ()=>{
+    if(nextPos){ currentReading = nextPos; localStorage.setItem("elaris::lastread", JSON.stringify(currentReading)); render(); }
   });
   document.getElementById("btn-bookmark-here")?.addEventListener("click", ()=>{
     State.bookmarks.push({id:Date.now(), chNum, pageIdx, title:chapter.title, note:"", ts:new Date().toISOString()});
@@ -635,90 +576,6 @@ function renderReader(body){
   });
 }
 function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function gotoGlobal(gpZeroBased){
-  const chNum = Math.floor(gpZeroBased/PAGES_PER_CHAPTER)+1;
-  const pageIdx = gpZeroBased % PAGES_PER_CHAPTER;
-  currentReading = {chNum, pageIdx};
-  localStorage.setItem("elaris::lastread", JSON.stringify(currentReading));
-  State.view = "reader"; render();
-}
-
-/* ----- Continue Story view (generation control panel) ----- */
-function renderContinue(body){
-  const next = nextEmptyPosition(1,0);
-  body.innerHTML = `
-    <div class="section-title">Continue the story</div>
-    <div class="section-desc">The engine writes forward from the last completed page, using the canon bible and a rolling continuity log — never the whole novel — so each page costs only what it needs.</div>
-    ${next ? `
-      <div class="card" style="max-width:640px;">
-        <div class="tag">Next up</div>
-        <h4>${State.chapters[next.chNum-1].title}</h4>
-        <div class="desc">Page ${next.pageIdx+1} of ${PAGES_PER_CHAPTER} · Book ${bookForChapter(next.chNum).num} · ${bookForChapter(next.chNum).arc}</div>
-        <div class="gen-row" style="margin-top:16px;">
-          <button class="btn btn-gold" data-gen="1">Generate Next Page</button>
-          <button class="btn" data-gen="2">Generate 2 Pages</button>
-          <button class="btn" data-gen="5">Generate 5 Pages</button>
-          <button class="btn" data-gen="10">Generate 10 Pages</button>
-          <button class="btn" id="btn-gen-chapter">Generate Rest of Chapter</button>
-        </div>
-        <div class="gen-row" style="margin-top:8px;">
-          <button class="btn btn-ghost" id="btn-auto-gen">▶ Auto-generate until stopped</button>
-          <button class="btn btn-danger" id="btn-stop-gen" style="display:none;">■ Stop</button>
-        </div>
-        <div class="gen-status" id="gen-status"></div>
-        <div class="stream-preview" id="gen-preview" style="display:none;"></div>
-      </div>
-    ` : `<div class="empty-state"><h3>The saga is complete</h3><p>All 2,568 pages have been written.</p></div>`}
-  `;
-  if(!next) return;
-  const statusEl = document.getElementById("gen-status");
-  const previewEl = document.getElementById("gen-preview");
-  const stopBtn = document.getElementById("btn-stop-gen");
-  const autoBtn = document.getElementById("btn-auto-gen");
-  function onStatus(text){
-    previewEl.style.display = "block";
-    previewEl.textContent = text.length>600 ? "…"+text.slice(-600) : text;
-    statusEl.textContent = "Writing…";
-  }
-  async function runBatch(count, untilStopped){
-    if(State.genRunning) return;
-    State.genRunning = true; State.genStop = false;
-    stopBtn.style.display = "inline-block";
-    document.querySelectorAll("[data-gen], #btn-gen-chapter, #btn-auto-gen").forEach(b=>b.disabled=true);
-    let done = 0;
-    try{
-      while(untilStopped || done<count){
-        if(State.genStop) { statusEl.textContent = "Stopped."; break; }
-        const pos = nextEmptyPosition(1,0);
-        if(!pos){ statusEl.textContent = "The saga is complete!"; break; }
-        statusEl.textContent = `Writing Chapter ${pos.chNum}, page ${pos.pageIdx+1}…`;
-        try{
-          await generateOnePage(pos.chNum, pos.pageIdx, onStatus);
-          done++;
-          currentReading = {chNum:pos.chNum, pageIdx:pos.pageIdx};
-        }catch(err){
-          statusEl.textContent = "Generation error: " + (err.message||err.code||"unknown");
-          showToast("Generation stopped: " + (err.code||"error"));
-          break;
-        }
-      }
-    } finally{
-      State.genRunning = false;
-      stopBtn.style.display = "none";
-      previewEl.style.display = "none";
-      document.querySelectorAll("[data-gen], #btn-gen-chapter, #btn-auto-gen").forEach(b=>b.disabled=false);
-      renderContinue(body);
-    }
-  }
-  document.querySelectorAll("[data-gen]").forEach(b=> b.addEventListener("click", ()=> runBatch(parseInt(b.dataset.gen,10), false)));
-  document.getElementById("btn-gen-chapter").addEventListener("click", ()=>{
-    const pos = nextEmptyPosition(1,0);
-    const remaining = PAGES_PER_CHAPTER - pos.pageIdx;
-    runBatch(remaining, false);
-  });
-  autoBtn.addEventListener("click", ()=> runBatch(0, true));
-  stopBtn.addEventListener("click", ()=>{ State.genStop = true; statusEl.textContent = "Stopping after this page…"; });
-}
 
 /* ----- Chapters / Books view ----- */
 function renderChapters(body){
@@ -927,19 +784,6 @@ function renderSettings(body){
           </select>
         </label>
       </div>
-      <div>
-        <label class="field"><span>Default generation batch size</span>
-          <select id="set-batch">
-            <option value="1" ${s.batchSize==1?"selected":""}>1 page</option>
-            <option value="3" ${s.batchSize==3?"selected":""}>3 pages</option>
-            <option value="5" ${s.batchSize==5?"selected":""}>5 pages</option>
-            <option value="10" ${s.batchSize==10?"selected":""}>10 pages</option>
-          </select>
-        </label>
-        <div class="toggle-row"><span>Auto-advance to next page after generating</span>
-          <button class="switch ${s.autoAdvance?'on':''}" id="set-autoadvance"><div class="knob"></div></button>
-        </div>
-      </div>
     </div>
     <div class="section-title" style="margin-top:30px;">Backups</div>
     <div class="section-desc">Export everything (the manuscript, encyclopedia, continuity log, bookmarks, notes and settings) or bring in a previous export.</div>
@@ -955,8 +799,6 @@ function renderSettings(body){
   document.getElementById("set-lh").oninput = (e)=>{ s.lineHeight=parseFloat(e.target.value); persistSettings(); applyTheme(); };
   document.getElementById("set-width").oninput = (e)=>{ s.width=parseInt(e.target.value,10); persistSettings(); applyTheme(); };
   document.getElementById("set-align").onchange = (e)=>{ s.align=e.target.value; persistSettings(); applyTheme(); };
-  document.getElementById("set-batch").onchange = (e)=>{ s.batchSize=parseInt(e.target.value,10); persistSettings(); };
-  document.getElementById("set-autoadvance").onclick = (e)=>{ s.autoAdvance=!s.autoAdvance; persistSettings(); renderSettings(body); };
 
   document.getElementById("btn-export-json").onclick = async ()=>{
     const backup = {exportedAt:new Date().toISOString(), chapters:State.chapters, encyclopedia:State.encyclopedia, continuity:State.continuity, bookmarks:State.bookmarks, notes:State.notes, settings:State.settings};
@@ -1011,7 +853,6 @@ async function boot(){
   render();
 }
 document.getElementById("btn-start-reading").onclick = ()=>{ document.getElementById("cover").classList.add("hidden"); State.view="reader"; render(); };
-document.getElementById("btn-continue-story").onclick = ()=>{ document.getElementById("cover").classList.add("hidden"); State.view="continue"; render(); };
 boot();
 </script>
 </body>
