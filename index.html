@@ -298,36 +298,36 @@ let immersiveMode = false;
 // 30 BOOKS STRUCTURE
 // ==========================================
 const BOOKS = [
-  {id:1,title:"The Storm That Remembered",arc:"Earth Fall",chStart:1,chEnd:8,summary:"The Earth Storm tears open the world's old order. Cuza and Gren survive the first impossible days and begin traveling with Jess, Horway, Ducavice, and Silly. Strange shards, vanished histories, and a warning beneath the world establish the saga's central mysteries."},
-  {id:2,title:"Ashes Under Green Skies",arc:"Earth Fall",chStart:9,chEnd:15,summary:"The survivors cross fractured territories where the Storm has changed weather, trade, borders, and belief. Cuza's power begins attracting governments and desperate civilians, while Gren discovers that raw force cannot solve every problem."},
-  {id:3,title:"The Road of Broken Names",arc:"Earth Fall",chStart:16,chEnd:22,summary:"The companions encounter refugee kingdoms, old roads, forgotten shrines, and the first organized factions hunting magical shards. Jess's Lexicon reveals fragments of a history that contradicts the world's accepted creation stories."},
-  {id:4,title:"The Shard Market",arc:"Earth Fall",chStart:23,chEnd:29,summary:"The journey reaches the outer influence of Gronsrock. Black-market shard networks turn catastrophe into commerce. Horway's reputation grows, Ducavice's past begins to surface, and Cuza learns that changing matter can have consequences far beyond the object he touches."},
-  {id:5,title:"The City Below the Scar",arc:"Gronsrock Split",chStart:30,chEnd:36,summary:"Gronsrock becomes the center of the story. Its districts, criminal networks, laborers, merchants, rulers, and shard economy are explored from within. The companions become entangled in a conflict they cannot simply walk away from."},
-  {id:6,title:"Blood and Lithic Fire",arc:"Gronsrock Split",chStart:37,chEnd:43,summary:"A struggle over a major shard supply threatens the city. Horway's Cleaver of Blood exacts a personal cost, and the group learns that Gronsrock's divisions are older than its present government."},
-  {id:7,title:"The Quiet Kingdom",arc:"Gronsrock Split",chStart:44,chEnd:50,summary:"The companions discover that resistance inside Gronsrock is not united. Ordinary citizens, criminals, officials, workers, and idealists want incompatible futures. A quiet alliance begins forming around the possibility of changing the city without destroying it."},
-  {id:8,title:"The Split",arc:"Gronsrock Split",chStart:51,chEnd:57,summary:"Gronsrock fractures politically and physically. Cuza is forced to confront what his abilities mean to people who see him as both salvation and existential threat. The consequences reshape regional power."},
-  {id:9,title:"The Altitude of Kings",arc:"Sky Kingdom Wars",chStart:58,chEnd:64,summary:"The companions enter the world of Cara, where altitude determines privilege. Floating cities and lithic engines reveal a civilization whose geography is inseparable from its social hierarchy."},
-  {id:10,title:"Engines Above the Clouds",arc:"Sky Kingdom Wars",chStart:65,chEnd:71,summary:"Sky fleets, military factions, engine guilds, and rival altitude societies collide. Gren finds environments where kinetic manipulation can become both weapon and engineering tool."},
-  {id:11,title:"War at Seven Thousand Steps",arc:"Sky Kingdom Wars",chStart:72,chEnd:78,summary:"Aerial conflict spreads between cities. The companions become involved in a war whose causes are older than its current commanders. Ducavice's history as a guardian of a fallen kingdom becomes impossible to hide."},
-  {id:12,title:"The Falling City",arc:"Sky Kingdom Wars",chStart:79,chEnd:85,summary:"A major airborne city is threatened with destruction. Victory requires choices that cannot save everyone, and the aftermath permanently changes relationships within the group."},
-  {id:13,title:"The Last Sky Road",arc:"Sky Kingdom Wars",chStart:86,chEnd:92,summary:"The sky kingdoms face a political settlement while factions prepare for another conflict. Jess discovers a connection between the Lexicon and the same ancient force hinted at since the Earth Storm."},
-  {id:14,title:"A Kingdom Without a Shadow",arc:"Sky Kingdom Wars",chStart:93,chEnd:99,summary:"The war's deeper history emerges. Old enemies must negotiate, while Cuza and Gren confront the limits and differences of their powers rather than treating them as interchangeable forms of strength."},
-  {id:15,title:"The Road to Silly",arc:"Kingdom of Silly",chStart:100,chEnd:106,summary:"The companions enter a civilization that seems impossibly peaceful. Its beauty and order are genuine, but so are the things it refuses to explain."},
-  {id:16,title:"The King Who Was Already Waiting",arc:"Kingdom of Silly",chStart:107,chEnd:113,summary:"Silly's people display fierce loyalty to their mysterious king. The companions are welcomed, watched, and slowly drawn into contradictions buried beneath the kingdom's perfect surface."},
-  {id:17,title:"The Book That Lost a Sense",arc:"Kingdom of Silly",chStart:114,chEnd:120,summary:"Jess pushes the Lexicon further and pays a price that cannot be undone casually. The group learns that knowledge itself can be dangerous, especially when the world has spent generations forgetting something."},
-  {id:18,title:"The Little Dog at the Gate",arc:"Kingdom of Silly",chStart:121,chEnd:127,summary:"Silly becomes central rather than incidental. His immunity to cosmic, atomic, and kinetic magic raises questions nobody can answer. The kingdom's oldest records contain references to something that resembles him."},
-  {id:19,title:"The History Beneath the Garden",arc:"Kingdom of Silly",chStart:128,chEnd:134,summary:"The companions uncover buried history beneath Silly's peaceful civilization. Old choices by rulers, builders, and survivors begin connecting the five major arcs."},
-  {id:20,title:"The Name of the First Silence",arc:"Kingdom of Silly",chStart:135,chEnd:141,summary:"The Earth Storm mystery moves from rumor toward a coherent pattern. The group must decide how much truth can be revealed without destroying the people whose lives were built around a carefully preserved history."},
-  {id:21,title:"After the Storm",arc:"Generational Peace",chStart:142,chEnd:148,summary:"The immediate age of catastrophe begins to end. Rebuilding replaces conquest, but peace creates new disputes over borders, resources, memory, justice, and who gets to write history."},
-  {id:22,title:"Children of Gronsrock",arc:"Generational Peace",chStart:149,chEnd:155,summary:"A younger generation grows up knowing the old conflicts only through stories. Their choices reveal that ending a war does not erase the systems and resentments that produced it."},
-  {id:23,title:"The Sky Remembers",arc:"Generational Peace",chStart:156,chEnd:162,summary:"Cara's descendants inherit both the achievements and injustices of the altitude system. Old engines become monuments, infrastructure, and political symbols."},
-  {id:24,title:"The Things We Kept",arc:"Generational Peace",chStart:163,chEnd:169,summary:"Objects, letters, scars, ruins, and names from the first twenty-three books acquire new meaning. A seemingly minor detail from the early journey becomes important to the future."},
-  {id:25,title:"The Long Peace",arc:"Generational Peace",chStart:170,chEnd:176,summary:"Several generations pass. New cities and institutions emerge. The old companions become legends, memories, disputed historical figures, or stories told incorrectly by people who never met them."},
-  {id:26,title:"The Inheritance of Ash",arc:"Generational Peace",chStart:177,chEnd:183,summary:"A crisis among descendants forces the world to confront whether the peace was built on truth, compromise, or deliberate forgetting."},
-  {id:27,title:"The World Beneath the World",arc:"Generational Peace",chStart:184,chEnd:190,summary:"Long-buried evidence finally clarifies the cosmic anchor and the nature of the Earth Storm. Earlier mysteries begin locking together without reducing them to a single simple explanation."},
-  {id:28,title:"What Cuza Changed",arc:"Generational Peace",chStart:191,chEnd:197,summary:"Cuza's legacy is examined through the societies that survived him. His ability to restructure matter changed civilization, but the meaning of that change depends on what later generations chose to do with it."},
-  {id:29,title:"The Last Question",arc:"Generational Peace",chStart:198,chEnd:205,summary:"The final generation faces the consequences of everything the saga has built. Old friends' legacies, forgotten enemies, surviving institutions, and the deepest mystery converge."},
-  {id:30,title:"When the World Remembers",arc:"Generational Peace",chStart:206,chEnd:214,summary:"The saga closes across generations. The final revelations recontextualize the beginning, but the ending remains human: what people remember, what they lose, what they rebuild, and what they choose to leave for those who come after them."}
+  {id:1,title:"The Night the World Broke",arc:"Earth Fall",chStart:1,chEnd:8,summary:"The rain began before sunset. Cuza and Gren fell through a crack in reality into the world of Elaris. Something ancient noticed them. Something beneath Elaris had begun to remember."},
+  {id:2,title:"The Boy Who Could Break Things",arc:"Earth Fall",chStart:9,chEnd:15,summary:"Gronsrock revealed its divisions. Gren became the Gruean, the Splitter, discovering his power had a ceiling. Cuza had no such boundary. That difference became a wound between them."},
+  {id:3,title:"The Binder of Atoms",arc:"Earth Fall",chStart:16,chEnd:22,summary:"Cuza discovered he could manipulate atoms themselves. The world named him Acra, Binder of Atoms. Some called him savior. Some called him disaster. Jess found him with the Lexicon of Ruin."},
+  {id:4,title:"The Lexicon",arc:"Earth Fall",chStart:23,chEnd:29,summary:"Jess joined them. Every spell in the Lexicon cost a sense. Horway, Ducavice, and Silly joined. The six became a family. Silly was immune to all magic. Nobody understood why."},
+  {id:5,title:"The City Below the Scar",arc:"Gronsrock Split",chStart:30,chEnd:36,summary:"Gronsrock broke. A tax revolt became civil war. Gren wanted to destroy the system. Cuza wanted to negotiate. Their disagreement became the defining tension of the saga."},
+  {id:6,title:"Blood and Lithic Fire",arc:"Gronsrock Split",chStart:37,chEnd:43,summary:"Horway nearly died using the Cleaver of Blood. The axe consumed lifespan, not just stamina. He kept fighting anyway, spending years of his future so the others could live."},
+  {id:7,title:"The Quiet Kingdom",arc:"Gronsrock Split",chStart:44,chEnd:50,summary:"Gronsrock became honest. Gren built public roads powered by kinetic engines. For the first time, his gift could create. He was no longer only a destroyer."},
+  {id:8,title:"The Split",arc:"Gronsrock Split",chStart:51,chEnd:57,summary:"A buried shard awakened. The earth opened. Cuza altered matter on a scale that froze the sky. Beneath the new canyon they found an ancient symbol: a circle broken by two lines."},
+  {id:9,title:"The Altitude of Kings",arc:"Sky Kingdom Wars",chStart:58,chEnd:64,summary:"Cara floated above the clouds. Altitude determined privilege. Ducavice recognized the emblem of his fallen kingdom. Cara had built its empire on the ruins of his home."},
+  {id:10,title:"Engines Above the Clouds",arc:"Sky Kingdom Wars",chStart:65,chEnd:71,summary:"Gren found a world made for him. Airships, engines, momentum. He redirected vessels using tiny changes in vector. For the first time, he felt special without feeling inferior."},
+  {id:11,title:"War at Seven Thousand Steps",arc:"Sky Kingdom Wars",chStart:72,chEnd:78,summary:"War came to Cara. Ducavice recognized the enemy commander. He had been a child when Ducavice's kingdom fell. The battle lasted nine days."},
+  {id:12,title:"The Falling City",arc:"Sky Kingdom Wars",chStart:79,chEnd:85,summary:"A floating city fell. Cuza rebuilt the engine. Gren split the momentum. Jess translated a forbidden command and lost hearing. The city survived. One neighborhood did not."},
+  {id:13,title:"The Last Sky Road",arc:"Sky Kingdom Wars",chStart:86,chEnd:92,summary:"Jess found the broken circle in the Lexicon. Cuza and Gren were connected to something before Elaris. The Earth Storm was not a doorway. It was a wound."},
+  {id:14,title:"A Kingdom Without a Shadow",arc:"Sky Kingdom Wars",chStart:93,chEnd:99,summary:"The war ended through negotiation. Ducavice returned to his ruined kingdom. He placed his crown beneath a tree and walked away. Some things were meant to be remembered, not restored."},
+  {id:15,title:"The Road to Silly",arc:"Kingdom of Silly",chStart:100,chEnd:106,summary:"They found the Kingdom of Silly beyond golden grass. Too beautiful. The king sent one message: WELCOME HOME. Cuza had never been there."},
+  {id:16,title:"The King Who Was Already Waiting",arc:"Kingdom of Silly",chStart:107,chEnd:113,summary:"The king was older than the kingdom. He bowed to Silly, not to Cuza. Everything begins with him."},
+  {id:17,title:"The Book That Lost a Sense",arc:"Kingdom of Silly",chStart:114,chEnd:120,summary:"Jess opened the deepest Lexicon. Hearing went. Then touch. Then sight. The final sentence: THE WORLD WAS BUILT TO FORGET."},
+  {id:18,title:"The Little Dog at the Gate",arc:"Kingdom of Silly",chStart:121,chEnd:127,summary:"Silly walked to an ancient gate. Inside: two figures. One held matter. One held motion. Between them stood a small animal. Not a god. A witness."},
+  {id:19,title:"The History Beneath the Garden",arc:"Kingdom of Silly",chStart:128,chEnd:134,summary:"Beneath the gardens: the first civilization. They tore the cosmic anchor. The Earth Storm was the consequence. Someone had repaired it. Someone had planned Cuza and Gren's arrival."},
+  {id:20,title:"The Name of the First Silence",arc:"Kingdom of Silly",chStart:135,chEnd:141,summary:"The First Silence was not a person. It was the name of a choice. Together they could repair the anchor. But the price was never returning."},
+  {id:21,title:"After the Storm",arc:"Generational Peace",chStart:142,chEnd:148,summary:"Peace came slowly. Cuza refused to become emperor. Gren refused a military title. Horway became a teacher. They discovered something harder than war: living."},
+  {id:22,title:"Children of Gronsrock",arc:"Generational Peace",chStart:149,chEnd:155,summary:"A generation grew up hearing Gren was monster, hero, tyrant, liberator. His notebook read: Power is knowing what not to break."},
+  {id:23,title:"The Sky Remembers",arc:"Generational Peace",chStart:156,chEnd:162,summary:"Cara's descendants transformed engines into public infrastructure. Children touched Ducavice's handprint, not knowing whose it was. A guardian once saved this city. Did he win? No. He stayed."},
+  {id:24,title:"The Things We Kept",arc:"Generational Peace",chStart:163,chEnd:169,summary:"Horway melted the Cleaver of Blood into farm tools. A weapon that consumed years became instruments that gave people food. Ducavice kept his crown beneath his bed."},
+  {id:25,title:"The Long Peace",arc:"Generational Peace",chStart:170,chEnd:176,summary:"Cuza became legend, then myth, then controversy. A photograph showed six figures. The sixth had been drawn over. Someone had erased Gren."},
+  {id:26,title:"The Inheritance of Ash",arc:"Generational Peace",chStart:177,chEnd:183,summary:"Remembering incorrectly was dangerous. Peace built on forgetting was fragile. A new generation chose to remember. The sky changed. Every person dreamed of rain."},
+  {id:27,title:"The World Beneath the World",arc:"Generational Peace",chStart:184,chEnd:190,summary:"The cosmic anchor was beneath Earth, not Elaris. Cuza and Gren had not fallen into another world. They had been carried forward. Elaris was not a prison. It was a refuge."},
+  {id:28,title:"What Cuza Changed",arc:"Generational Peace",chStart:191,chEnd:197,summary:"Cuza could create. Gren could redirect. Neither could create a new reality. Only together could they repair the anchor. The enemy had always been the wound itself."},
+  {id:29,title:"The Last Question",arc:"Generational Peace",chStart:198,chEnd:205,summary:"They met one last time beneath rain. No armies. No dragons. Just two friends. If we fix it, do you think anyone will remember us? Probably not. Good. Because then they get to live without needing us."},
+  {id:30,title:"When the World Remembers",arc:"Generational Peace",chStart:206,chEnd:214,summary:"The anchor appeared as light. Cuza held matter. Gren held motion. The worlds separated. Two empty places beneath a tree. Every year, families carried broken things into the rain and repaired them by hand."}
 ];
 
 const TOTAL_CHAPTERS = 214;
@@ -337,2221 +337,1001 @@ const TOTAL_PAGES = 2568;
 // ==========================================
 // PROLOGUE CONTENT
 // ==========================================
-const PROLOGUE_CONTENT = `THE RAIN
+const PROLOGUE_CONTENT = `ELÃRIS
+THE BINDER AND THE SPLITTER
+A COMPLETE THIRTY-BOOK SAGA
 
-The rain had started before sunset.
+BOOK I â€” THE NIGHT THE WORLD BROKE
 
-By midnight, it had become a storm.
+The rain began before sunset.
 
-Water poured from the rooftops and raced along the streets in shining streams. Thunder rolled between the buildings, and lightning occasionally turned the entire city white for a fraction of a second.
+By midnight it was falling so hard that the city seemed to have become an ocean of black glass. Cuza and Gren walked beneath one umbrella, arguing about whether going outside had been a good idea.
 
-Most people had gone home hours ago.
+â€œIt wasn't,â€ Cuza said.
 
-Two had not.
+â€œIt was,â€ Gren answered.
 
-Cuza walked beneath a useless umbrella, his jacket soaked through anyway.
-
-Beside him, Gren stepped around a puddle.
-
-â€œYou know,â€ Cuza said, â€œwe could have stayed home.â€
-
-Gren looked at him.
-
-â€œAnd do what?â€
-
-â€œLiterally anything.â€
-
-â€œI was bored.â€
-
-â€œYou dragged me outside because you were bored?â€
-
-â€œYes.â€
-
-Cuza stared at him.
-
-Gren smiled.
+â€œYou dragged me out.â€
 
 â€œYou're welcome.â€
 
-â€œFor what?â€
-
-â€œFor giving you an exciting evening.â€
-
 Cuza laughed.
 
-â€œYou're an idiot.â€
+Neither of them knew it was the last ordinary laugh they would share for a very long time.
 
-â€œAnd you're still walking with me.â€
+The crack appeared beneath Cuza's shoe.
 
-â€œThat says more about me than it does about you.â€
+At first it was thin.
 
-They continued down the empty road.
+Then it multiplied.
 
-They had been friends for years.
+The road groaned. Windows burst. Cars slid toward a widening darkness. Above them the clouds rotated against the wind, revealing a black circle where no star should have been.
 
-Best friends.
+Gren grabbed Cuza's arm.
 
-The kind who could spend hours doing absolutely nothing and still somehow have a good time.
-
-Neither knew that this would be the last ordinary conversation they would ever have.
-
-Cuza suddenly stopped.
-
-Gren took another step.
-
-â€œWhat?â€
-
-Cuza looked down.
-
-A thin crack ran beneath his shoe.
-
-â€œWas that there before?â€
-
-Gren crouched.
-
-â€œNo.â€
-
-The rainwater disappeared into the crack.
-
-Gren touched the pavement.
-
-Nothing.
-
-â€œProbably nothing.â€
-
-Cuza nodded.
-
-Thenâ€”
-
-CRK.
-
-Another crack appeared.
-
-Then another.
-
-Then another.
-
-The road trembled.
-
-Gren slowly stood.
-
-â€œCuza.â€
-
-â€œI know.â€
-
-The pavement began splitting apart.
-
-Cars rocked.
-
-A streetlight fell.
-
-The road dropped several centimeters.
-
-â€œMove!â€
-
-They turned.
-
-The street behind them cracked open.
-
-Cuza grabbed Gren.
-
-â€œRUN!â€
+â€œRun.â€
 
 They ran.
 
-But there was nowhere to go.
+The street vanished.
 
-The entire road collapsed.
+They fell.
 
-The pavement disappeared beneath their feet.
+There was no wind in the darkness. No up. No down. No sense of time. Gren kept talking because silence frightened him more than falling.
 
-For one moment, Cuza saw the storm above.
+â€œIf there's a bottom,â€ he shouted, â€œI'm blaming you.â€
 
-Thenâ€”
+â€œYou're blaming me for gravity?â€
 
-Darkness.
+â€œI blame you for everything.â€
 
+Cuza laughed again.
 
----
+Then they saw light.
 
-CHAPTER ONE
+They crashed through clouds into another world.
 
-THE FALL
+Its name was ElÃ¡ris.
 
-â€œCUZA!â€
+They landed on a green plateau beneath four-winged birds and mountains that seemed too large to belong to any map.
 
-Gren's voice echoed through the darkness.
-
-â€œGREN!â€
-
-Cuza reached outward.
-
-Nothing.
-
-There were no walls.
-
-No ground.
-
-No sky.
-
-He was falling, but he couldn't feel wind.
-
-It was as if gravity itself had forgotten how to work.
-
-â€œWHERE ARE YOU?â€
-
-â€œOVER HERE!â€
-
-â€œI CAN'T SEE YOU!â€
-
-â€œME NEITHER!â€
-
-Cuza tried moving toward Gren's voice.
-
-He couldn't tell whether he was getting closer.
-
-Time became meaningless.
-
-Minutes.
-
-Hours.
-
-Maybe longer.
-
-They kept falling.
-
-Eventually Gren called out:
-
-â€œDo you think there's a bottom?â€
-
-Cuza looked down into the endless black.
-
-â€œI hope so.â€
-
-â€œI don't think there is.â€
-
-â€œDon't say that.â€
-
-â€œI'm just being honest.â€
-
-â€œBe honest quietly.â€
-
-Gren laughed.
-
-Even here.
-
-Even now.
-
-He could still make Cuza laugh.
-
-Then Cuza noticed something.
-
-A tiny point of light.
-
-Far below.
-
-â€œGren.â€
-
-â€œWhat?â€
-
-â€œLook.â€
-
-The light grew.
-
-The darkness became blue.
-
-Then white.
-
-They were moving faster.
-
-The light swallowed everything.
-
-And suddenlyâ€”
-
-Wind.
-
-Clouds.
-
-Sky.
-
-Mountains.
-
-Forest.
-
-A world.
-
-They were falling toward it.
-
-â€œWE'RE GOING TO HIT!â€
-
-â€œTHEN DO SOMETHING!â€
-
-â€œI DON'T KNOW WHAT!â€
-
-They plunged through the clouds.
-
-Cuza closed his eyes.
-
-Everything went white.
-
-
----
-
-CHAPTER TWO
-
-ELARIS
-
-Cuza woke on grass.
-
-He opened his eyes.
-
-Blue sky.
-
-Sunlight.
-
-Clouds.
-
-He sat up.
-
-The rain was gone.
-
-The road was gone.
-
-The city was gone.
-
-Gren groaned nearby.
-
-â€œYou alive?â€
-
-â€œUnfortunately.â€
-
-Cuza laughed.
-
-Gren sat up.
-
-Then he stopped.
-
-They both stared.
-
-The plateau stretched for miles.
-
-Strange trees grew along the horizon.
-
-Some had purple bark.
-
-Some had glowing leaves.
-
-Massive mountains surrounded the land.
-
-A bird with four wings flew overhead.
-
-Gren pointed.
-
-â€œThat bird has four wings.â€
-
-â€œI noticed.â€
-
-â€œThat's weird.â€
-
-â€œVery.â€
-
-They explored.
-
-They found silver water.
-
-Flowers that moved.
-
-Creatures they couldn't name.
-
-And enormous footprints.
-
-Then something roared beyond the mountains.
-
-The entire plateau shook.
-
-Cuza stared toward the sound.
-
-â€œWhat was that?â€
-
-Gren swallowed.
-
-â€œI don't know.â€
-
-A tiny machine appeared overhead.
-
-A red light scanned them.
+A machine descended from the sky.
 
 â€œIDENTIFY YOURSELVES.â€
 
-Cuza raised his hands.
-
 â€œCuza.â€
 
-â€œSECOND INDIVIDUAL.â€
-
 â€œGren.â€
-
-â€œSPECIES?â€
-
-â€œHuman.â€
 
 â€œORIGIN?â€
 
-Cuza hesitated.
+Cuza looked at Gren.
 
 â€œEldermere.â€
 
-â€œPURPOSE?â€
+It was a lie.
 
-â€œTravel.â€
+The machine accepted it.
 
-The machine scanned them.
+Far away, behind mountains, something enormous roared.
 
-â€œIDENTIFICATION ACCEPTED.â€
+Neither friend knew it yet, but the storm had not transported them randomly.
 
-More machines appeared.
+Something had opened.
 
-They were escorted toward a distant walled city.
+Something ancient had noticed them.
 
-Its name was Gronsrock.
+And somewhere beneath ElÃ¡ris, something had begun to remember.
 
-And Cuza's first mistake in Elaris had already been made.
+BOOK II â€” THE BOY WHO COULD BREAK THINGS
 
-He had lied about where they came from.
+The first city they reached was Gronsrock.
 
+Gren hated it.
 
----
+Not because it was ugly.
 
-CHAPTER THREE
+Because it was beautiful in the wrong places.
 
-GRONSRock
+The upper districts glittered with shard-lamps. Merchants sold magical weapons beneath red banners. Nobles rode through streets guarded by soldiers who looked away whenever the poor were beaten.
 
-Gronsrock looked impressive.
+Below the bridges, children searched gutters for lithic fragments worth enough to buy bread.
 
-Huge stone walls surrounded it.
+Gren watched a guard kick an old man into the mud.
 
-Towers rose above crowded streets.
-
-Markets overflowed with food, weapons, clothing, magical objects and strange creatures.
-
-At first, Gren loved it.
-
-â€œThis place is incredible.â€
-
-Cuza smiled.
-
-â€œIt is.â€
-
-But the longer they stayed, the more they noticed.
-
-A rich man pushed a merchant aside.
-
-The guards ignored it.
-
-A powerful citizen attacked someone.
-
-Nobody stopped him.
-
-A poor family begged for help.
-
-A guard walked past.
-
-Gren's expression darkened.
-
-â€œThis place is broken.â€
-
-Cuza looked at him.
-
-â€œMaybe.â€
-
-â€œWe should do something.â€
-
-â€œGren.â€
-
-Gren turned.
-
-â€œLet's fix them.â€
-
-Cuza grabbed his arm.
-
-â€œWait.â€
-
-Gren pulled away.
-
-â€œYou don't understand.â€
-
-â€œI understand enough.â€
-
-â€œNo.â€
-
-Gren looked at the city.
-
-â€œThey don't care about each other.â€
-
-His voice became colder.
-
-â€œSo why should I care about them?â€
-
-Then he walked away.
-
-Cuza followed.
-
-â€œGren!â€
-
-He didn't stop.
-
-The first explosion shook Gronsrock.
-
-Then another.
-
-And another.
-
-Magic tore through buildings.
-
-People screamed.
-
-Guards ran.
-
-Gren moved through the city with terrifying power.
-
-Cuza couldn't understand what he was seeing.
-
-His best friend was destroying everything.
-
-â€œGREN!â€
-
-Gren looked back once.
-
-For a moment, Cuza saw the old Gren.
-
-Then it was gone.
-
-The city fell.
-
-By the time the army reached them, Gronsrock was ruined.
-
-Cuza stood among the destruction.
-
-An official pointed a weapon at him.
-
-â€œName.â€
-
-â€œCuza.â€
-
-â€œYour relationship to the attacker?â€
-
-â€œSomeone I know.â€
-
-â€œOrigin?â€
-
-â€œSomewhere far away.â€
-
-â€œKingdom?â€
-
-â€œFar away.â€
-
-â€œPurpose?â€
-
-â€œLooking around.â€
-
-â€œDid you know this would happen?â€
-
-Cuza looked at the ruins.
-
-â€œNo.â€
-
-The official studied him.
-
-There wasn't enough evidence to imprison him.
-
-They gave him a citizen identification card and temporary citizenship.
-
-Then they left.
-
-Cuza walked away alone.
-
-He never looked back.
-
-
----
-
-CHAPTER FOUR
-
-THE PARTY
-
-For days, Cuza traveled alone.
-
-He learned about Elaris.
-
-Magic existed.
-
-Monsters existed.
-
-Kingdoms existed.
-
-Airships crossed the skies.
-
-And warriors could become legends.
-
-One afternoon, Cuza met four strangers.
-
-The first was a red-haired warrior carrying a massive battle axe.
-
-â€œHorway.â€
-
-The second was a quiet, serious man in armor.
-
-â€œDucavice.â€
-
-The third was a quiet woman holding a book.
-
-â€œJess.â€
-
-The fourth was tiny.
-
-Huge eyes.
-
-Tiny paws.
-
-It looked up at Cuza.
-
-â€œSilly.â€
-
-Cuza blinked.
-
-â€œThat's your name?â€
-
-â€œSilly.â€
-
-Horway laughed.
-
-â€œHe doesn't say much.â€
-
-Jess turned a page.
-
-â€œHe says enough.â€
-
-Ducavice nodded.
-
-Cuza smiled.
-
-â€œI think I'll like him.â€
-
-Silly looked at him.
-
-â€œSilly.â€
-
-And somehow, that became the beginning of a new family.
-
-They traveled together.
-
-They fought monsters.
-
-They shared meals.
-
-Horway polished his axe every night.
-
-Jess read everywhere.
-
-Ducavice watched everything.
-
-Silly wandered wherever he pleased.
-
-And Cuza began smiling again.
-
-He had lost Gren.
-
-But Elaris had given him something else.
-
-Friends.
-
-
----
-
-CHAPTER FIVE
-
-THE BLACK DRAGON
-
-Their first great battle came without warning.
-
-A black dragon descended from the mountains.
-
-Its scales absorbed the sunlight.
-
-Its aura crushed trees beneath it.
-
-Horway grinned.
-
-â€œFinally.â€
-
-He charged.
-
-His axe struck the dragon.
-
-Nothing.
-
-Jess unleashed magic.
-
-Nothing.
-
-Ducavice attacked.
-
-Nothing.
-
-The dragon opened its mouth.
-
-Cuza stepped forward.
-
-â€œEveryone move.â€
-
-The dragon fired.
-
-Cuza raised one hand.
-
-The attack disappeared.
-
-The dragon stared.
-
-Cuza flicked his finger.
-
-Golden light crossed the battlefield.
-
-The dragon vanished.
-
-Silence.
-
-Horway stared.
-
-Jess lowered her book.
-
-Ducavice looked at Cuza.
-
-Silly blinked.
-
-Cuza scratched his head.
-
-â€œLucky hit.â€
-
-Horway slowly lowered his axe.
-
-â€œThat was not luck.â€
-
-Cuza smiled.
-
-From that day onward, Cuza became careful.
-
-He had realized something.
-
-His power wasn't normal.
-
-And he wasn't ready for anyone to know how powerful he really was.
-
-
----
-
-CHAPTER SIX
-
-CARA
-
-Eventually, the party reached the Sky Kingdom of Cara.
-
-It floated above the clouds.
-
-Massive islands drifted through the sky.
-
-Airships traveled between them.
-
-Magical engines powered entire cities.
-
-Cuza learned sky magic.
-
-The normal training took twenty days.
-
-Cuza understood it in five minutes.
-
-Jess stared at him.
-
-â€œI've been teaching you for five minutes.â€
-
-Cuza shrugged.
-
-â€œYou're a good teacher.â€
-
-â€œThat isn't the problem.â€
-
-He smiled.
-
-Cara became a second home.
-
-Cuza also discovered something strange about himself.
-
-Money.
-
-One day he thought about needing five hundred gold.
-
-He reached into his pocket.
-
-Five hundred gold appeared.
-
-He stared at it.
-
-He tried again.
-
-A thousand.
-
-Again.
-
-Ten thousand.
-
-He stopped.
-
-Nobody saw.
-
-He never told anyone.
-
-Then Silly found something.
-
-A crystal.
-
-Ancient symbols appeared.
-
-ANCIENT SEAL DETECTED.
-
-Cuza looked up.
-
-â€œThat's bad.â€
-
-The crystal cracked.
-
-
----
-
-CHAPTER SEVEN
-
-THE WARRIOR OF LIGHT
-
-The ancient seal shattered.
-
-A dragon emerged.
-
-It was so enormous that its wings covered half of Cara.
-
-People fled.
-
-Airships scrambled.
-
-The party prepared to fight.
-
-Cuza looked around.
-
-Too many civilians.
-
-Too many lives.
-
-He disappeared.
-
-Moments later, a figure appeared above the clouds.
-
-Golden armor.
-
-Radiant sword.
-
-Brilliant light.
-
-The Warrior of Light.
-
-The dragon attacked.
-
-Cuza answered.
-
-The sky became gold.
-
-A tremendous magical explosion flashed across Cara like fireworks.
-
-When the light faded, the dragon was gone.
-
-The people cheered.
-
-The King of Cara rushed forward.
-
-â€œThe Warrior of Light!â€
-
-He looked around.
-
-â€œOne of my soldiers!â€
-
-Cuza, still disguised, stared at him.
-
-â€œWhat a liar.â€
-
-Unfortunately, he had forgotten to disguise his voice.
-
-Jess heard it.
-
-She looked toward Cuza's empty position.
-
-Then back at the Warrior of Light.
-
-Her eyes narrowed.
-
-
----
-
-CHAPTER EIGHT
-
-THE AGE OF WAR
-
-King Lezo made an announcement.
-
-â€œDefeat me, and half my kingdom is yours.â€
-
-The announcement changed Elaris.
-
-Warriors arrived from every direction.
-
-Airships filled Cara's skies.
-
-Armies mobilized.
-
-Mercenaries gathered.
-
-The Age of War had begun.
-
-Cuza and his friends joined Cara.
-
-Lezo's army marched toward the eastern kingdoms.
-
-A gigantic black fortress appeared on the horizon.
-
-Warships surrounded it.
-
-A voice echoed through the sky.
-
-â€œYou have entered the age of war.â€
-
-Cuza looked at the army.
-
-Something felt wrong.
-
-This wasn't a game.
-
-Families were going to die.
-
-And soon, the army reached Cara.
-
-A dark-crimson dragon descended.
-
-Thousands of soldiers rode on its back.
-
-Lezo sat upon a black throne.
-
-â€œCara will fall.â€
-
-The prince of Cara stepped forward.
-
-He looked at the terrified soldiers.
-
-â€œOur families are behind us.â€
-
-He raised his sword.
-
-â€œOur homes are behind us.â€
-
-The army lifted their weapons.
-
-â€œFor Cara!â€
-
-The answer shook the city.
-
-â€œFOR CARA!â€
-
-The battle began.
-
-
----
-
-CHAPTER NINE
-
-THE WARRIOR OF LIGHT
-
-Magic filled the sky.
-
-Airships exploded.
-
-Dragons roared.
-
-Soldiers clashed.
-
-Cuza watched the battlefield.
-
-He saw people dying.
-
-He saw families fighting.
-
-He saw fear.
-
-He couldn't stand there anymore.
-
-He raised his sword.
-
-A massive boom echoed across the sky.
-
-Light descended.
-
-The Warrior of Light appeared.
-
-Horway stared.
-
-â€œThat voiceâ€¦â€
-
-Jess whispered:
-
-â€œCuza.â€
-
-Lezo laughed.
-
-â€œSo you're the Warrior of Light.â€
-
-Cuza raised his sword.
-
-Lezo unleashed Crimson Annihilation.
-
-The attack hit.
-
-Smoke covered the battlefield.
-
-When it clearedâ€”
-
-Cuza stood untouched.
-
-Lezo's face changed.
-
-He transformed.
-
-His power increased.
-
-He attacked again.
-
-Cuza blocked every strike.
-
-Finally Cuza said:
-
-â€œShow me.â€
-
-Lezo unleashed everything.
-
-Cuza ended the battle.
-
-Lezo fell.
-
-The army stopped.
-
-Later, Cuza returned to his friends.
-
-Horway pointed at him.
-
-â€œYou.â€
-
-Cuza smiled.
-
-â€œMe.â€
-
-â€œYou're the Warrior of Light.â€
-
-Jess crossed her arms.
-
-â€œYou're terrible at hiding things.â€
-
-Ducavice nodded.
-
-â€œI suspected.â€
-
-Silly raised a paw.
-
-â€œSilly.â€
-
-Cuza laughed.
-
-â€œYes.â€
-
-
----
-
-CHAPTER TEN
-
-THE KINGDOM OF SILLY
-
-Cuza received half of the kingdom.
-
-He signed the papers.
-
-Then someone asked what the new kingdom should be called.
-
-Everyone suggested serious names.
-
-Silly raised a paw.
-
-â€œSilly.â€
-
-Cuza looked at him.
-
-Then smiled.
-
-â€œKingdom of Silly.â€
-
-And so it was named.
-
-People moved there.
-
-Thousands became hundreds of thousands.
-
-Then millions.
-
-Everyone believed the Warrior of Light lived there.
-
-The kingdom ran out of space.
-
-Cuza walked beyond its borders.
-
-He looked across the empty horizon.
-
-Then he reached into the air.
-
-Magic moved.
-
-Atoms rearranged.
-
-Land appeared.
-
-Mountains rose.
-
-Fields formed.
-
-Roads stretched across the new territory.
-
-The kingdom expanded.
-
-Silly became enormous.
-
-Cuza stood on the castle balcony.
-
-Jess joined him.
-
-â€œYou created all of this.â€
-
-Cuza smiled.
-
-â€œMaybe.â€
-
-She shook her head.
-
-â€œYou are impossible.â€
-
-He laughed.
-
-For the first time, Cuza had a home.
-
-
----
-
-CHAPTER ELEVEN
-
-THE BLACK AIRSHIPS
-
-Peace lasted.
-
-Then black airships appeared.
-
-They covered the sky.
-
-A voice echoed across Silly.
-
-â€œKingdom of Silly.â€
-
-Cuza stepped onto the balcony.
-
-â€œYou have been summoned.â€
-
-A pause.
-
-â€œRefusal is not an option.â€
-
-Millions gathered below.
-
-The Warrior of Light appeared beside Cuza.
-
-The people cheered.
-
-Then a stranger appeared.
-
-â€œGren is coming.â€
-
-Cuza froze.
-
-A figure appeared above the airships.
-
-Gren.
-
-Older.
-
-Stronger.
-
-Different.
-
-He looked at Cuza.
-
-â€œCuza.â€
-
-He smiled.
-
-â€œI was close.â€
-
-His expression hardened.
-
-â€œSOO close.â€
-
-Then he vanished.
-
-The enemy fleet opened fire.
-
-Thousands of attacks descended.
-
-Cuza had already prepared.
-
-An invisible dome surrounded the kingdom.
-
-Every attack hit it.
-
-Every attack bounced away.
-
-Millions survived.
-
-Cuza looked toward the horizon.
-
-â€œGren.â€
-
-
----
-
-CHAPTER TWELVE
-
-THE FRIEND WHO RETURNED
-
-Gren had not simply disappeared.
-
-He had been manipulated.
-
-A man had taken advantage of him.
-
-His anger.
-
-His loneliness.
-
-His desire for power.
-
-The man twisted his memories and convinced him that Cuza was the reason everything had gone wrong.
-
-Gren became stronger.
-
-Not stronger than Cuza.
-
-But close.
-
-Very close.
-
-His abilities were measurable.
-
-His limits could be seen.
-
-Cuza's could not.
-
-That difference frightened Gren.
-
-Because every time they fought, Cuza always seemed to have something left.
-
-Back in Silly, Jess found Cuza alone.
-
-â€œYou're afraid.â€
-
-Cuza looked at her.
-
-â€œYes.â€
-
-â€œOf Gren?â€
-
-â€œYes.â€
-
-She waited.
-
-â€œBecause he's strong?â€
-
-Cuza shook his head.
-
-â€œBecause I know him.â€
-
-Jess understood.
-
-Meanwhile, Gren stood with the man who had manipulated him.
-
-â€œYou still hesitate,â€ the man said.
-
-Gren looked toward Silly.
-
-â€œNo.â€
-
-â€œYou're lying.â€
-
-Gren clenched his fist.
-
-â€œI'll defeat him.â€
-
-But somewhere inside him, his old memories were beginning to return.
-
-
----
-
-CHAPTER THIRTEEN
-
-THE COLOSSUS
-
-The largest enemy airship opened.
-
-A gigantic machine stepped out.
-
-The Colossus.
-
-Black armor covered its body.
-
-Its sword was enormous.
-
-It had been designed to destroy kingdoms.
-
-The Colossus struck Silly's protective dome.
-
-BOOM.
-
-Cracks appeared.
-
-Again.
-
-BOOM.
-
-The dome began failing.
-
-Cuza walked outside.
-
-Horway shouted:
-
-â€œCUZA!â€
-
-The Colossus swung.
-
-Cuza raised one hand.
-
-He caught the sword.
-
-The entire battlefield went silent.
-
-Cuza looked at it.
-
-â€œThat's pretty heavy.â€
-
-The machine pushed.
-
-Cuza didn't move.
-
-He pushed back.
-
-The Colossus staggered.
-
-Cuza looked toward the machine.
-
-â€œThis needs a bigger machine.â€
-
-Behind him, the Warrior of Light raised his sword.
-
-Light flashed.
-
-Every enemy airship was sliced into a million pieces.
-
-The soldiers below collapsed unconscious.
-
-Cuza teleported them to Hewery.
-
-The battle ended.
-
-But Gren was still coming.
-
-
----
-
-CHAPTER FOURTEEN
-
-THE MESSAGE
-
-The defeated commander was taken to Hewery.
-
-He smiled.
-
-â€œI know who the Warrior of Light is.â€
-
-The leaders listened.
-
-â€œHe isn't the strongest person in Silly.â€
-
-Silence.
-
-â€œThere's someone else.â€
-
-Meanwhile, a stranger approached Silly.
-
-He appeared above the castle.
-
-â€œYou're Cuza.â€
-
-Cuza looked at him.
-
-â€œWho are you?â€
-
-â€œA messenger.â€
-
-â€œFrom whom?â€
-
-â€œSomeone who knows what you really are.â€
+â€œWhy didn't anyone stop him?â€
 
 Cuza said nothing.
 
-The stranger continued.
+That silence changed Gren.
 
-â€œGren is coming.â€
+He began helping people.
 
-A pause.
+At first it was small: a broken cart, a collapsed roof, a family whose shard-ration had been stolen.
 
-â€œThis time, he isn't alone.â€
+Then the city noticed him.
 
-Then the stranger vanished.
+The black-market guilds noticed him too.
 
-Cuza looked at his kingdom.
+Gren discovered that his gift was not ordinary magic. He could feel motion itself. A thrown stone was a vector. A falling wall was a vector. A sword swing was a vector. Heat, impact, accelerationâ€”all of them became patterns he could read.
 
-His people.
+The people of Gronsrock began calling him the Gruean.
 
-His family.
+The Splitter.
 
-His friends.
+But the more Gren fought, the more he learned something frightening.
 
-He turned toward Jess.
+His power had a ceiling.
 
-â€œThis is my fault.â€
+There was only so much force his body could direct before his muscles tore and his nervous system began to fail.
 
-â€œNo.â€
+Cuza had no such obvious boundary.
 
-â€œLet me finish what I started.â€
+That difference became a wound between them.
 
-He flew into the sky.
+Then the shard riots began.
 
+Gren wanted to destroy the system.
 
----
+Cuza wanted to understand it.
 
-CHAPTER FIFTEEN
+Neither realized that the shards were pieces of something much older than Gronsrock.
 
-THE GREATEST BATTLE
+Pieces of the thing that had torn open the sky.
 
-The sky was empty.
+BOOK III â€” THE BINDER OF ATOMS
 
-Cuza waited.
+Cuza discovered his power quietly.
 
-Then Gren appeared.
+A broken cup fell from a table.
 
-They looked at each other.
+He reached for it.
 
-No armies surrounded them.
+The fragments stopped.
 
-No audience.
+Not because time stopped.
 
-No kingdom.
+Because the cup had forgotten it was broken.
 
-Only clouds.
+The pieces reassembled.
 
-â€œCuza.â€
+Later he repaired a bridge.
 
-â€œGren.â€
+Then a house.
 
-Gren smiled.
+Then a road.
 
-â€œI missed this.â€
+He learned the terrifying truth: he was not manipulating objects.
 
-Cuza lowered his sword.
+He was manipulating what objects were.
 
-â€œSo did I.â€
+Atoms answered him.
 
-Gren attacked.
+Stone could become steel.
 
-The first impact split the clouds.
+Steel could become water.
 
-The second shook mountains.
+Water could become glass.
 
-The third sent a shockwave across Elaris.
+Matter could be built from almost nothingâ€”but creation stole heat from the world around him.
 
-Gren's magic formed enormous blades.
+When Cuza rebuilt a collapsed tower, frost covered the street.
 
-Cuza avoided them.
+When he created a wall, people nearby shivered.
 
-Lightning covered the sky.
+When he changed a mountain, the earth moved miles away.
 
-Gren moved through it.
+The world named him ACRA.
 
-Cuza blocked.
+Binder of Atoms.
 
-Gren struck.
+Some called him savior.
 
-Cuza countered.
+Some called him god.
 
-They moved faster than any ordinary warrior could follow.
+Some called him disaster.
 
-Gren's power increased.
+Cuza hated all three.
 
-Cuza still hadn't shown his limit.
+Jess found him one night sitting beside a frozen fountain.
 
-Gren noticed.
+She carried a black book.
 
-â€œYou're still holding back.â€
+â€œThe Lexicon of Ruin,â€ she said.
 
-Cuza said nothing.
+â€œIt translates old magic.â€
 
-â€œSo am I.â€
-
-They collided.
-
-The sky became light.
-
-They crashed through clouds.
-
-They fought across mountains.
-
-They exchanged hundreds of blows.
-
-Gren pushed himself further.
-
-His magic reached its highest known limit.
-
-Cuza remained standing.
-
-Gren laughed.
-
-â€œI knew it.â€
-
-â€œWhat?â€
-
-â€œYou never showed me everything.â€
-
-Cuza smiled sadly.
-
-â€œNo.â€
-
-Gren attacked one final time.
-
-Cuza met him.
-
-Their fists collided.
-
-A shockwave crossed the world.
-
-Thenâ€”
-
-Silence.
-
-Neither had won.
-
-Neither had lost.
-
-They simply stood there.
-
-Exhausted.
-
-Two friends who had become enemies.
-
-Two enemies who still remembered being friends.
-
-
----
-
-CHAPTER SIXTEEN
-
-ACra AND GRUEAN
-
-Gren looked at Cuza.
-
-â€œAcra.â€
-
-Cuza looked back.
-
-â€œGruean.â€
-
-The old names.
-
-Names from before Elaris.
-
-Before the kingdoms.
-
-Before the war.
-
-Before everything.
-
-Gren laughed.
-
-â€œWe really ended up here.â€
-
-Cuza nodded.
-
-â€œI guess we did.â€
-
-Gren looked toward the horizon.
-
-â€œI remember the rain.â€
-
-â€œSo do I.â€
-
-â€œThe fall.â€
-
-â€œThe plateau.â€
-
-â€œGronsrock.â€
-
-Cuza looked down.
-
-â€œI wish that had gone differently.â€
-
-Gren smiled.
-
-â€œSo do I.â€
-
-They stood together for a moment.
-
-Then Gren turned away.
-
-â€œIâ€™m gonna miss you.â€
-
-Cuza's eyes softened.
-
-â€œMe too.â€
-
-Gren walked away.
-
-Cuza didn't follow.
-
-Some goodbyes weren't meant to be stopped.
-
-Their battle became the greatest battle in Elaris history.
-
-But Cuza remembered something else.
-
-Two boys.
-
-One rainy night.
-
-Two hands reaching for each other in the darkness.
-
-
----
-
-CHAPTER SEVENTEEN
-
-SEVEN YEARS
-
-Seven years passed.
-
-Silly grew.
-
-Its cities became enormous.
-
-Airships traveled between districts.
-
-Markets stretched for miles.
-
-The kingdom became one of the richest powers in Elaris.
-
-Cuza was still King.
-
-Jess was Queen.
-
-Horway had become commander of the royal army.
-
-His hair was still red.
-
-His collection of battle scars had grown.
-
-His love for his axe had somehow grown even more.
-
-Ducavice became chief protector.
-
-He remained quiet.
-
-Strong.
-
-Serious.
-
-Both men had families now.
-
-And Cuza had his own.
-
-A thirteen-year-old son.
-
-A six-year-old daughter.
-
-One evening, Jess sat reading on the balcony.
-
-Cuza sat beside her.
-
-Silly slept on his lap.
-
-Their son leaned against the railing.
-
-Their daughter ran around the courtyard.
-
-Cuza looked across his kingdom.
-
-He remembered arriving in Elaris.
-
-He remembered having nothing.
-
-Now he had everything.
-
-
----
-
-CHAPTER EIGHTEEN
-
-THE FIRST WORLD WAR
-
-Peace did not last forever.
-
-The Verdant Alliance attacked Silly.
-
-The alliance consisted of forest kingdoms:
-
-Thornvale.
-
-Mossreach.
-
-Elderwood.
-
-Greenfall.
-
-Wildmere.
-
-Roothelm.
-
-And the central Verdant Alliance leadership.
-
-Silly's allies responded.
-
-Cara.
-
-Hewery.
-
-Eldermere.
-
-The Northern Free States.
-
-The declaration was simple.
-
-â€œAn attack on one is an attack on all.â€
-
-The First World War began.
-
-The Ashen Empire fought the Verdant forces in the east.
-
-Silly fought them in the west.
-
-Cara fought them in the sky.
-
-Millions mobilized.
-
-Cities built bunkers.
-
-Airships filled the clouds.
-
-Trade routes collapsed.
-
-Families separated.
-
-Cuza stood over a battlefield.
-
-He saw thousands of soldiers preparing to attack each other.
-
-He raised his hand.
-
-Jess watched from afar.
-
-She knew what he was about to do.
-
-Thousands of magical circles appeared across the sky.
-
-One.
-
-Ten.
-
-One hundred.
-
-Thousands.
-
-Fire.
-
-Lightning.
-
-Wind.
-
-Water.
-
-Earth.
-
-Light.
-
-Gravity.
-
-Space.
-
-Magic itself.
-
-They combined.
-
-A golden sphere appeared.
-
-It grew.
-
-City-sized.
-
-Mountain-sized.
-
-Larger.
-
-The armies stopped.
-
-Cuza looked down.
-
-â€œI don't want a war.â€
-
-The sphere transformed.
-
-Not into destruction.
-
-Into a barrier.
-
-A gigantic golden wall rose from the earth to the heavens.
-
-Every attack vanished.
-
-The battlefield became silent.
-
-The war ended.
-
-Not because one side had conquered the other.
-
-Because Cuza refused to let another generation be destroyed.
-
-
----
-
-CHAPTER NINETEEN
-
-PEACE
-
-The nations met.
-
-Borders were redrawn.
-
-Armies were reduced.
-
-Trade reopened.
-
-Smaller kingdoms received protection.
-
-The Elaris Peace Alliance was created.
-
-For the first time in years, the continent began rebuilding.
-
-Eight years passed.
-
-Silly became even larger.
-
-Cuza and Jess ruled together.
-
-Their son grew.
-
-Their daughter remained energetic.
-
-Horway commanded the army.
-
-Ducavice protected the royal family.
-
-Silly remained peaceful.
-
-Then an invitation arrived.
-
-The Elaris Peace Alliance was holding its first major meeting.
-
-Every major nation was invited.
-
-Cuza entered the Grand Hall with Jess, Horway and Ducavice.
-
-Nearly every ruler in Elaris sat around the enormous circular table.
-
-Cuza looked around.
-
-â€œWow.â€
-
-Horway smiled.
-
-â€œEveryone actually showed up.â€
-
-â€œOf course they did.â€
-
-Ducavice looked at Cuza.
-
-â€œYou ended the last war.â€
-
-Cuza shrugged.
-
-â€œI barely remember doing that.â€
+â€œDoes it cost anything?â€
 
 Jess looked at him.
 
-â€œYou stopped an entire army formation in three seconds.â€
-
-Cuza smiled.
-
-â€œExactly.â€
-
-â€œBarely.â€
-
-The meeting began.
-
-Borders.
-
-Trade.
-
-Military limits.
-
-Magical weapons.
-
-Protection of smaller kingdoms.
-
-It was the beginning of a new era.
-
-Then a document appeared on the table.
-
-The words were written in black ink.
-
-THE PEACE OF ELARIS ENDS TONIGHT.
-
-The hall went silent.
-
-Black feathers appeared.
-
-Windows shattered.
-
-A voice echoed through the room.
-
-â€œYou gathered every ruler into one place.â€
-
-A magical seal appeared beneath the floor.
-
-Ducavice stared at the symbol.
-
-â€œThe Black Crown.â€
-
-The nation had officially disappeared thirty years earlier.
-
-Cuza raised one hand.
-
-The seal vanished.
-
-The entire room stared.
-
-Cuza sighed.
-
-â€œCan we please have one meeting without someone trying to destroy the world?â€
-
-Jess closed her book.
-
-â€œApparently not.â€
-
-
----
-
-CHAPTER TWENTY
-
-THE LAST SHADOW
-
-The Black Crown never returned that night.
-
-The mysterious threat disappeared.
-
-The rulers continued their work.
-
-Peace survived.
-
-For a while.
-
-Cuza remained cautious.
-
-He knew Elaris would never become completely safe.
-
-There would always be monsters.
-
-There would always be people seeking power.
-
-There would always be someone who believed war was the answer.
-
-But Silly had become strong enough to survive.
-
-And Cuza had something worth protecting.
-
-His family.
-
-One afternoon, his daughter disappeared.
-
-Cuza found her in a training room.
-
-She held a wooden spoon.
-
-His son held a wooden sword.
-
-Cuza stared.
-
-â€œWhat are you two doing?â€
-
-â€œTraining.â€
-
-â€œNo.â€
-
-His daughter raised the spoon.
-
-â€œFighting.â€
-
-â€œYou're six.â€
-
-â€œI can beat Horway.â€
-
-Cuza laughed.
-
-â€œYou?â€
-
 â€œYes.â€
 
-Horway entered.
+â€œWhat?â€
 
-â€œWhat did I hear?â€
+She closed the book.
 
-The girl pointed the spoon at him.
+â€œMe.â€
 
-â€œYou.â€
+BOOK IV â€” THE LEXICON
 
-Horway looked at Cuza.
+Jess joined them.
 
-Cuza was already laughing.
+Every spell in the Lexicon required payment.
 
-â€œFine,â€ Horway said.
+A word could summon fire, but translating it might cost sight.
 
-The fight began.
+Another could open a door through stone, but demand hearing.
 
-The girl charged.
+Jess learned to count her senses like coins.
 
-Horway raised his battle axe.
+She and Cuza grew close slowly.
 
-She swung the spoon.
+There was no sudden romance.
 
-BONK.
+There were shared breakfasts.
 
-Horway flew backward.
+Arguments.
 
-Straight into a bush.
+Silences.
+
+The habit of sitting beside each other when neither knew what to say.
+
+Horway joined them after attempting to steal Cuza's dinner and deciding friendship was easier.
+
+His Cleaver of Blood was almost as large as he was.
+
+Ducavice joined later.
+
+He spoke little.
+
+He watched everything.
+
+His spatial shields could turn a battlefield into a wall of impossible angles.
+
+He had once guarded a kingdom.
+
+He never said its name.
+
+Silly simply followed them.
+
+A tiny dog-like creature with huge eyes and no fear.
+
+Magic behaved strangely around him.
+
+Cosmic spells slid away.
+
+Atomic manipulation could not touch him.
+
+Kinetic force passed harmlessly around his body.
+
+Nobody understood why.
+
+Silly did not care.
+
+He slept in Cuza's coat.
+
+And slowly, without anyone deciding it, the six of them became a family.
+
+BOOK V â€” THE CITY BELOW THE SCAR
+
+Gronsrock broke.
+
+Not all at once.
+
+A tax revolt became a strike.
+
+A strike became a riot.
+
+A riot became a civil war.
+
+The rich districts closed their gates.
+
+The poor districts armed themselves.
+
+The shard guilds bought soldiers.
+
+Gren tried to stop the bloodshed.
+
+He discovered that saving a city was harder than destroying one.
+
+He could shatter a tank.
+
+He could not shatter hunger.
+
+Cuza could rebuild walls.
+
+He could not rebuild trust.
+
+The brothers fought side by side for three days.
+
+On the fourth, they disagreed.
+
+Gren wanted the ruling council removed.
+
+Cuza wanted negotiations.
+
+Gren shouted, â€œYou keep fixing the damage after people cause it!â€
+
+Cuza answered, â€œAnd you keep breaking things because you don't know how to fix them!â€
 
 Silence.
 
-He slowly emerged.
+That sentence stayed between them.
 
-â€œI have been defeatedâ€¦â€
+Years later, both would remember it.
 
-He looked at the spoon.
+BOOK VI â€” BLOOD AND LITHIC FIRE
 
-â€œâ€¦by a spoon.â€
+Horway nearly died.
 
-Cuza nearly fell over laughing.
+He used the Cleaver of Blood to save a district trapped beneath a collapsing fortress.
 
+The axe drank his strength.
 
----
+Then more.
 
-CHAPTER TWENTY-ONE
+His hair turned pale at the temples.
 
-THE NEXT GENERATION
+His heart nearly stopped.
 
-Later, Cuza's son challenged him.
+When he woke, he asked one question.
 
-The boy held a wooden sword.
+â€œDid the axe survive?â€
 
-Cuza held a stick.
+Cuza stared at him.
 
-â€œReady?â€
+Horway grinned weakly.
 
-The boy attacked.
+â€œImportant question.â€
 
-Fast.
+The group laughed.
 
-Cuza blocked.
+Then Jess cried where he couldn't see.
 
-Another strike.
+They learned the axe did not merely consume stamina.
 
-Blocked.
+It consumed lifespan.
 
-Another.
+Horway had been spending years of his future every time he fought beyond his limits.
 
-Blocked.
+He kept fighting anyway.
 
-The boy changed direction.
+Not because he wanted to die.
 
-Cuza followed.
+Because he wanted the others to have enough time to live.
 
-The boy jumped.
+BOOK VII â€” THE QUIET KINGDOM
 
-Cuza stepped aside.
+Gronsrock did not become peaceful.
 
-Then the boy kicked the ground.
+It became honest.
 
-A tiny burst of magic launched him upward.
+The old regime fell.
 
-Cuza caught the wooden sword.
+Workers demanded representation.
 
-The boy landed.
+Merchants demanded protection.
 
-Everyone went silent.
+Nobles demanded their property.
 
-Jess looked at her son.
+Criminal guilds demanded immunity.
 
-Cuza smiled.
+There was no clean victory.
 
-â€œYou've got your mother's talent.â€
+There was politics.
 
-He paused.
+Compromise.
 
-â€œAnd maybe something else.â€
+Betrayal.
 
-The boy looked excited.
+People who had fought beside each other now argued across tables.
 
-His sister raised her spoon.
+Gren learned that civilization was not a battlefield.
 
-â€œME NEXT!â€
+It was a thousand people disagreeing without killing one another.
 
-Cuza stared at her.
+He began building instead of breaking.
+
+His greatest achievement was not a weapon.
+
+It was a system of public roads powered by controlled kinetic engines.
+
+For the first time, Gren understood his gift could create.
+
+He was still the Splitter.
+
+But he was no longer only a destroyer.
+
+BOOK VIII â€” THE SPLIT
+
+Then Gronsrock physically split.
+
+A buried shard awakened beneath the city.
+
+The earth opened for kilometers.
+
+Cuza stopped the collapseâ€”but the force required him to alter matter on a scale that froze the sky.
+
+Snow fell in summer.
+
+Buildings leaned.
+
+A distant coastline moved.
+
+Cuza realized the truth.
+
+Every time he changed the world, the world changed him back.
+
+The group survived.
+
+But Gronsrock never looked the same.
+
+And beneath the new canyon they found an ancient symbol:
+
+a circle broken by two lines.
+
+One line for the Binder.
+
+One for the Splitter.
+
+Neither understood it.
+
+Yet.
+
+BOOK IX â€” THE ALTITUDE OF KINGS
+
+Cara floated above the clouds.
+
+Its cities were islands held aloft by lithic engines.
+
+The higher a person lived, the richer and more powerful they were.
+
+The lowest districts hung beneath the clouds.
+
+The royal city floated above them all.
+
+Ducavice hated it immediately.
+
+â€œWhy?â€
+
+â€œThe sky remembers.â€
+
+Nobody understood.
+
+Then he saw the emblem of the fallen kingdom he once protected.
+
+Cara had built part of its empire on the ruins of his home.
+
+His past finally surfaced.
+
+He had failed once.
+
+He had sworn never to fail again.
+
+But protecting people from everything was impossible.
+
+That lesson would become important.
+
+BOOK X â€” ENGINES ABOVE THE CLOUDS
+
+Gren discovered a world made for him.
+
+Airships.
+
+Engines.
+
+Storm currents.
+
+Momentum.
+
+He learned to redirect enormous vessels using tiny changes in vector.
+
+Engineers began studying him.
+
+For the first time, Gren felt special without feeling inferior.
+
+Then a military faction tried to weaponize him.
+
+He refused.
+
+They attacked.
+
+Gren wonâ€”not by overpowering them, but by using the airship's own momentum against itself.
+
+Cuza watched from a dock.
+
+â€œYou've gotten better.â€
+
+Gren smiled.
+
+â€œI had a good teacher.â€
+
+â€œWho?â€
+
+â€œGravity.â€
+
+BOOK XI â€” WAR AT SEVEN THOUSAND STEPS
+
+War came to Cara.
+
+Not because one king was evil.
+
+Because generations of treaties, resource disputes, old betrayals and class resentment finally became impossible to contain.
+
+Ducavice recognized the first enemy commander.
+
+He had been a child when Ducavice's kingdom fell.
+
+The commander recognized him too.
+
+â€œYou survived.â€
+
+Ducavice answered:
+
+â€œSo did you.â€
+
+The battle lasted nine days.
+
+Ducavice saved thousands.
+
+He also failed to save hundreds.
+
+At the end, he stood among the wreckage and whispered the names of the dead.
+
+Jess sat beside him.
+
+â€œYou remember all of them?â€
+
+â€œYes.â€
+
+â€œWhy?â€
+
+â€œBecause they can't.â€
+
+BOOK XII â€” THE FALLING CITY
+
+A floating city began falling.
+
+Its central engine had been sabotaged.
+
+Millions lived below.
+
+Cuza could save the city.
+
+But not the people inside if he acted too quickly.
+
+Gren devised a different plan.
+
+He split the city's momentum into thousands of controlled vectors.
+
+Cuza rebuilt the failing engine piece by piece.
+
+Jess translated a forbidden command.
+
+She lost hearing in her left ear.
+
+Horway held a collapsing gate.
+
+Ducavice shielded an entire district.
+
+The city survived.
+
+But one neighborhood did not.
+
+A child asked Cuza why he could not save everyone.
+
+Cuza had no answer.
+
+That night he stopped calling himself a savior.
+
+BOOK XIII â€” THE LAST SKY ROAD
+
+Jess found the same symbol in the Lexicon.
+
+The broken circle.
+
+The two lines.
+
+The ancient text called them not weapons.
+
+â€œFunctions.â€
+
+That word frightened her.
+
+Cuza was not chosen because he was powerful.
+
+Gren was not chosen because he was strong.
+
+They were connected to something.
+
+Something that existed before ElÃ¡ris.
+
+The Earth Storm was not a doorway.
+
+It was a wound.
+
+And the world had been bleeding through it ever since.
+
+BOOK XIV â€” A KINGDOM WITHOUT A SHADOW
+
+The war ended through negotiation.
+
+No side won.
+
+No side admitted losing.
+
+Ducavice finally returned to the ruins of his old kingdom.
+
+There was nothing left.
+
+He placed his old crown beneath a tree.
+
+Then walked away.
+
+Gren asked if he wanted to rebuild it.
+
+Ducavice shook his head.
 
 â€œNo.â€
 
-â€œYES.â€
+â€œWhy?â€
 
-â€œNo.â€
+â€œBecause sometimes rebuilding means admitting the old thing is gone.â€
 
-â€œYES.â€
+Cuza understood.
 
-Jess laughed.
+Some things were not meant to be restored.
 
-Cuza sighed.
+Some things were meant to be remembered.
 
-â€œI'm going to regret this.â€
+BOOK XV â€” THE ROAD TO SILLY
 
-Horway whispered:
+They found the Kingdom of Silly beyond a valley of golden grass.
 
-â€œYou already do.â€
+It was beautiful.
 
-Cuza pointed at him.
+Too beautiful.
 
-â€œYou stay away from the spoon.â€
+People smiled.
 
-Horway immediately stepped backward.
+Children played.
 
+Markets were open.
 
----
+No soldiers stood in the streets.
 
-CHAPTER TWENTY-TWO
+Everyone loved their king.
 
-HOME
+The king's name was never spoken.
 
-Evening arrived.
+When Cuza entered the capital, thousands gathered.
 
-The castle balcony overlooked the kingdom.
+They looked at him.
 
-Lights stretched across Silly.
+Then at Silly.
 
-Airships moved peacefully between cities.
+Then back at him.
 
-Children played in the streets.
+The king sent one message:
 
-Markets remained open.
+WELCOME HOME.
 
-Music drifted upward.
+Cuza froze.
 
-Cuza sat with Jess.
+He had never been there.
 
-Their son leaned against him.
+BOOK XVI â€” THE KING WHO WAS ALREADY WAITING
 
-Their daughter slept beside Jess.
+The king finally appeared.
 
-Silly slept on Cuza's lap.
+He was an old man.
 
-Horway stood nearby with his family.
+Older than the kingdom.
 
-Ducavice stood with his.
+He looked at Cuza with tears in his eyes.
 
-Nobody was fighting.
+â€œYou took long enough.â€
 
-Nobody was dying.
+Cuza demanded answers.
 
-Nobody was running.
+The king refused.
 
-There was no dragon in the sky.
+Instead he asked Jess to close the Lexicon.
 
-No enemy fleet.
+He asked Gren to put away his weapons.
 
-No war.
+He asked Horway to sit.
 
-No ancient seal.
+He asked Ducavice to rest.
 
-Just a peaceful evening.
+Then he looked at Silly.
 
-Jess looked at Cuza.
+The little creature wagged his tail.
 
-â€œYou've come a long way.â€
+The king bowed to him.
 
-Cuza smiled.
+Not to Cuza.
 
-â€œSo have you.â€
+Not to the Warrior of Light.
 
-Horway raised his cup.
+To Silly.
 
-â€œTo Silly.â€
+â€œEverything begins with him.â€
 
-Ducavice nodded.
+BOOK XVII â€” THE BOOK THAT LOST A SENSE
 
-â€œTo peace.â€
+Jess opened the deepest section of the Lexicon.
 
-Jess smiled.
+She translated one sentence.
 
-â€œTo family.â€
+The price was hearing.
 
-Cuza looked at the kingdom.
+Then another.
 
-He remembered everything.
+The price was touch.
 
-The rainy night.
+Then sight.
 
-The crack.
+She became blind.
 
-The fall.
+Cuza begged her to stop.
 
-The endless darkness.
+She refused.
 
-Elaris.
+â€œI've spent my life reading about people who sacrificed everything for truth.â€
 
-Gronsrock.
+She smiled.
+
+â€œI'm allowed to understand them once.â€
+
+The final sentence appeared.
+
+THE WORLD WAS BUILT TO FORGET.
+
+Jess could no longer see the words.
+
+But Cuza could.
+
+BOOK XVIII â€” THE LITTLE DOG AT THE GATE
+
+Silly walked to an ancient gate.
+
+The gate opened.
+
+Inside was a chamber older than ElÃ¡ris.
+
+Its walls showed two figures.
+
+One held matter.
+
+One held motion.
+
+Between them stood a small animal.
+
+Not a god.
+
+Not a weapon.
+
+A witness.
+
+Silly touched the wall.
+
+Every ancient symbol vanished.
+
+The king whispered:
+
+â€œHe isn't immune to magic.â€
+
+Cuza looked at him.
+
+â€œThen what is he?â€
+
+The king answered:
+
+â€œHe is outside the argument.â€
+
+BOOK XIX â€” THE HISTORY BENEATH THE GARDEN
+
+Beneath Silly's gardens they found the first civilization.
+
+It had discovered the cosmic anchor.
+
+The anchor held realities apart.
+
+The ancient people believed they could use it to cross worlds.
+
+They were wrong.
+
+They tore it.
+
+The Earth Storm was the consequence.
+
+But the records revealed something stranger.
+
+The anchor had not broken completely.
+
+Someone had repaired it.
+
+Someone had sent the Binder and the Splitter through the wound.
+
+Someone had planned their arrival.
+
+Cuza asked who.
+
+The records ended there.
+
+BOOK XX â€” THE NAME OF THE FIRST SILENCE
+
+The answer was hidden inside a word no living language could pronounce.
+
+Jess, now partially blind and deaf, read it through touch.
+
+The First Silence was not a person.
+
+It was the name of a choice.
+
+Long ago, civilizations had discovered that reality could be altered by two opposite forces:
+
+matter could be bound.
+
+motion could be split.
+
+Together they could repair the anchor.
+
+But there was a cost.
+
+The people who repaired it would not be allowed to return.
+
+Cuza understood.
+
+Gren understood too.
+
+Neither spoke.
+
+BOOK XXI â€” AFTER THE STORM
+
+Peace came slowly.
+
+Gronsrock rebuilt.
+
+Cara changed its altitude laws.
+
+Silly opened its borders.
+
+The Peace Alliance formed.
+
+Cuza refused to become emperor.
+
+Gren refused a military title.
+
+Horway became a teacher.
+
+Ducavice protected roads instead of kings.
+
+Jess wrote books.
+
+Silly slept.
+
+For the first time, the world did not need them every morning.
+
+They discovered something harder than war.
+
+Living.
+
+BOOK XXII â€” CHILDREN OF GRONSRock
+
+A generation grew up hearing stories about Gren.
+
+They called him monster.
+
+Hero.
+
+Tyrant.
+
+Liberator.
+
+None were completely true.
+
+One young historian found Gren's old engineering notebooks.
+
+They were full of calculations.
+
+At the bottom of one page Gren had written:
+
+I used to think power meant being able to destroy anything.
+
+I was wrong.
+
+Power is knowing what not to break.
+
+The historian copied the sentence.
+
+Centuries later, it would become a foundation of Gronsrock law.
+
+BOOK XXIII â€” THE SKY REMEMBERS
+
+Cara's descendants transformed the old engines into public infrastructure.
+
+The highest city became a museum.
+
+The lowest district became the political center.
+
+An old engine still bore Ducavice's handprint.
+
+Children touched it.
+
+They had no idea whose hand it was.
+
+A guide told them:
+
+â€œA guardian once saved this city.â€
+
+A child asked:
+
+â€œDid he win?â€
+
+The guide smiled.
+
+â€œNo.
+
+He stayed.â€
+
+BOOK XXIV â€” THE THINGS WE KEPT
+
+Jess lost more senses as the years passed.
+
+But she kept writing.
+
+Her books became the most accurate history of the Storm.
+
+Horway's children inherited stories about the Cleaver of Blood.
+
+They never inherited the axe.
+
+Horway had melted it down before he died.
+
+The metal became hundreds of farm tools.
+
+A weapon that had consumed years of life became instruments that gave people food.
+
+Ducavice kept the old crown beneath his bed.
+
+He never wore it.
+
+Silly remained exactly the same.
+
+Nobody knew why.
+
+BOOK XXV â€” THE LONG PEACE
+
+Generations passed.
+
+Cuza became legend.
+
+Then myth.
+
+Then controversy.
+
+Some claimed he had been a god.
+
+Others claimed he had never existed.
+
+The Warrior of Light became a symbol.
+
+The ACRA became a scientific term.
+
+The GRUEAN became a mathematical one.
+
+Children learned both in school.
+
+Nobody remembered that they had once been friends.
+
+Then a historian discovered an old photograph.
+
+Six figures stood together.
+
+Cuza.
 
 Gren.
 
@@ -2563,123 +1343,369 @@ Ducavice.
 
 Silly.
 
-Cara.
+The photograph was impossible.
 
-The dragons.
+Because the sixth figure had been drawn over.
 
-The wars.
+Someone had erased Gren.
 
-The Warrior of Light.
+BOOK XXVI â€” THE INHERITANCE OF ASH
 
-The Kingdom of Silly.
+The erasure began making sense.
 
-The Greatest Battle.
+The ancient civilization had hidden the truth because history itself could reopen the anchor.
 
-The Peace Alliance.
+Knowledge was not merely dangerous.
 
-His children.
+Remembering incorrectly was dangerous.
 
-His family.
+The descendants of the old kingdoms had preserved peace by removing certain details.
 
-He looked down at Silly.
+Not maliciously.
 
-The little creature opened one eye.
+Fearfully.
 
-â€œSilly.â€
+But peace built on forgetting was fragile.
 
-Cuza smiled.
+A new generation chose to remember.
 
-â€œSilly.â€
+The sky changed.
 
-The kingdom's lights stretched all the way to the horizon.
+The old crack returned.
 
-His daughter shifted in her sleep.
+For one night, every person in ElÃ¡ris dreamed of rain.
 
-His son leaned closer.
+BOOK XXVII â€” THE WORLD BENEATH THE WORLD
 
-Jess closed her book.
+The final records were discovered.
 
-Cuza looked at them.
+The cosmic anchor was not beneath ElÃ¡ris.
 
-â€œThis isn't a bad ending.â€
+It was beneath the world Cuza and Gren had left.
 
-Jess smiled.
+Their Earth.
+
+The Storm had connected the two worlds.
+
+And the two friends had not been chosen to save ElÃ¡ris.
+
+They had been sent away because Earth was already lost.
+
+Cuza's hands shook.
+
+All his life he had thought he had fallen into another world.
+
+He had not.
+
+He had been carried forward.
+
+ElÃ¡ris was not a prison.
+
+It was a refuge.
+
+BOOK XXVIII â€” WHAT CUZA CHANGED
+
+Cuza finally understood why his power behaved differently from Gren's.
+
+Cuza could create.
+
+Gren could redirect.
+
+But neither could create a new reality.
+
+Only together could they repair the anchor.
+
+The final choice was not about defeating an enemy.
+
+There was no final villain.
+
+The enemy had always been the wound itself.
+
+Repairing it would close the path between worlds.
+
+Forever.
+
+Cuza would never see Earth again.
+
+Gren would never see ElÃ¡ris again.
+
+They could save both worlds.
+
+But they could not keep both.
+
+BOOK XXIX â€” THE LAST QUESTION
+
+They met one last time beneath the same kind of rain that had begun everything.
+
+Gren was older.
+
+Cuza was older.
+
+They laughed at how tired they looked.
+
+â€œYou remember the first night?â€ Gren asked.
+
+â€œYes.â€
+
+â€œYou blamed me.â€
+
+â€œYou dragged me outside.â€
+
+â€œI did.â€
+
+They sat beneath a tree.
+
+No armies.
+
+No dragons.
+
+No kings.
+
+No audience.
+
+Just two friends.
+
+Gren asked the last question.
+
+â€œIf we fix it, do you think anyone will remember us?â€
+
+Cuza looked toward the kingdom.
+
+â€œProbably not.â€
+
+Gren smiled.
+
+â€œGood.â€
+
+Cuza frowned.
+
+â€œWhy?â€
+
+â€œBecause then they get to live without needing us.â€
+
+BOOK XXX â€” WHEN THE WORLD REMEMBERS
+
+The final day came quietly.
+
+No prophecy announced it.
+
+No trumpet sounded.
+
+The anchor appeared above the mountains as a circle of impossible light.
+
+Cuza stood on one side.
+
+Gren stood on the other.
+
+Jess held the Lexicon.
+
+Horway's descendants watched from the valley.
+
+Ducavice's descendants stood beside them.
+
+Silly sat in the grass.
+
+Cuza reached toward the anchor.
+
+Matter answered.
+
+Gren lifted his hand.
+
+Motion answered.
+
+The worlds began to separate.
+
+Cuza felt every atom he had ever touched.
+
+The bridge.
+
+The city.
+
+The mountain.
+
+The walls.
+
+The kingdom.
+
+The first cup.
+
+The last home.
+
+Gren felt every movement.
+
+Every battle.
+
+Every engine.
+
+Every falling stone.
+
+Every hand that had reached for another hand.
+
+They understood the price.
+
+Cuza looked at Gren.
+
+â€œYou ready?â€
+
+Gren smiled.
 
 â€œNo.â€
 
-â€œIt isn't.â€
+Cuza laughed.
 
-The sun disappeared.
+â€œMe neither.â€
 
-The stars appeared.
+They began.
 
-The castle became quiet.
+The sky turned white.
 
-The people of Silly slept safely.
+For one impossible instant, Cuza saw the rainy street where it had all begun.
 
-For once, Cuza didn't have to prepare for tomorrow's battle.
+Gren stood beside him.
 
-He didn't have to hide behind a disguise.
+The umbrella was broken.
 
-He didn't have to become the Warrior of Light.
+The road was cracking.
 
-He didn't have to save the world.
+They were young.
 
-He could simply be Cuza.
+They were laughing.
 
-A husband.
+Then the vision changed.
 
-A father.
+They were old.
 
-A friend.
+They were sitting beneath a tree.
 
-A king.
+Then children were running through Silly.
 
-A man who had fallen into another world and somehow found a home.
+Then ships crossed Cara.
 
-And somewhere beyond the mountains, Elaris continued.
+Then Gronsrock's lights came alive.
 
-There would be new adventures.
+Then Jess was writing.
 
-New generations.
+Then Horway was laughing.
 
-New stories.
+Then Ducavice was standing beneath a tree.
 
-But tonight belonged to peace.
+Then generations passed.
 
-Cuza looked at Jess.
+Then the worlds separated.
 
-She looked back.
+The light vanished.
 
-Neither needed to say anything.
+Rain fell.
 
-They already understood.
+When the people of ElÃ¡ris opened their eyes, Cuza and Gren were gone.
 
-They had survived the impossible.
+No bodies.
 
-And nowâ€”
+No graves.
 
-They could live.
+No final battle.
 
-The lights of Silly shimmered beneath the stars.
+Just two empty places beneath the tree.
 
-Silly snored.
+Jess walked there.
 
-Cuza laughed quietly.
+She carried the Lexicon.
 
-His daughter smiled in her sleep.
+For the first time in years, she opened it.
 
-His son closed his eyes.
+Every page was blank.
 
-Jess rested her head against Cuza.
+She smiled through tears.
 
-The night continued.
+â€œGood.â€
 
-Not because their world had ended.
+She closed the book.
 
-But because, for once...
+Silly climbed into her lap.
 
-they were allowed to simply live.
+Years passed.
+
+Then centuries.
+
+The names Cuza and Gren changed.
+
+Some people called them gods.
+
+Some called them monsters.
+
+Some said they were brothers.
+
+Some said they were strangers.
+
+Most forgot them entirely.
+
+But one tradition survived.
+
+Every year, when the first rain came, families across ElÃ¡ris went outside.
+
+They carried broken things.
+
+A cracked cup.
+
+A damaged toy.
+
+A bent tool.
+
+A torn book.
+
+They placed them beneath the rain.
+
+Then they repaired them.
+
+Not with magic.
+
+With their hands.
+
+Children were taught why.
+
+The old people told them:
+
+â€œBecause once, two friends came from a broken world.
+
+One learned how to bind.
+
+One learned how to split.
+
+And when they finally had the power to save everything, they chose to leave everything free.â€
+
+Nobody knew if the story was true.
+
+Until one evening, many centuries later, a child walking through the gardens of Silly found something beneath a tree.
+
+Two stones.
+
+One smooth.
+
+One fractured.
+
+The child picked them up.
+
+A tiny dog-like creature watched from the grass.
+
+The child looked at it.
+
+â€œSilly?â€
+
+The creature wagged its tail.
+
+Then, for the first time anyone had ever recorded, Silly spoke more than one word.
+
+â€œRemember.â€
+
+The child smiled.
+
+And far above ElÃ¡ris, where the stars had once been hidden by the wound between worlds, two lights appeared.
+
+One held perfectly still.
+
+The other moved.
+
+Then they disappeared into the dawn.
 
 THE END`;
 
@@ -2691,14 +1717,18 @@ const PRELOADED_CHAPTERS = {};
 const storyText = PROLOGUE_CONTENT;
 // Chapter titles from the story
 const knownTitles = {
-  0: "THE RAIN", 1: "THE FALL", 2: "ELARIS", 3: "GRONSROCK",
-  4: "THE PARTY", 5: "THE BLACK DRAGON", 6: "CARA",
-  7: "THE WARRIOR OF LIGHT", 8: "THE AGE OF WAR",
-  9: "THE WARRIOR OF LIGHT", 10: "THE KINGDOM OF SILLY",
-  11: "THE BLACK AIRSHIPS", 12: "THE FRIEND WHO RETURNED",
-  13: "THE COLOSSUS", 14: "THE MESSAGE", 15: "THE GREATEST BATTLE",
-  16: "ACRA AND GRUEAN", 17: "SEVEN YEARS", 18: "THE FIRST WORLD WAR",
-  19: "PEACE", 20: "THE LAST SHADOW", 21: "THE NEXT GENERATION", 22: "HOME"
+  0: "THE NIGHT THE WORLD BROKE", 1: "THE BOY WHO COULD BREAK THINGS", 2: "THE BINDER OF ATOMS",
+  3: "THE LEXICON", 4: "THE CITY BELOW THE SCAR", 5: "BLOOD AND LITHIC FIRE",
+  6: "THE QUIET KINGDOM", 7: "THE SPLIT", 8: "THE ALTITUDE OF KINGS",
+  9: "ENGINES ABOVE THE CLOUDS", 10: "WAR AT SEVEN THOUSAND STEPS",
+  11: "THE FALLING CITY", 12: "THE LAST SKY ROAD", 13: "A KINGDOM WITHOUT A SHADOW",
+  14: "THE ROAD TO SILLY", 15: "THE KING WHO WAS ALREADY WAITING",
+  16: "THE BOOK THAT LOST A SENSE", 17: "THE LITTLE DOG AT THE GATE",
+  18: "THE HISTORY BENEATH THE GARDEN", 19: "THE NAME OF THE FIRST SILENCE",
+  20: "AFTER THE STORM", 21: "CHILDREN OF GRONSROCK", 22: "THE SKY REMEMBERS",
+  23: "THE THINGS WE KEPT", 24: "THE LONG PEACE", 25: "THE INHERITANCE OF ASH",
+  26: "THE WORLD BENEATH THE WORLD", 27: "WHAT CUZA CHANGED",
+  28: "THE LAST QUESTION", 29: "WHEN THE WORLD REMEMBERS"
 };
 
 // ==========================================
@@ -4060,7 +3090,7 @@ async function saveProgress() {
 // IMPORT EXISTING STORY
 // ==========================================
 async function importExistingStory() {
-  const chapters = storyText.split(/\n---\n/).map(c => c.trim()).filter(c => c.length > 0);
+  const chapters = storyText.split(/\nBOOK [IVXLCDM]+ â€” /).map(c => c.trim()).filter(c => c.length > 0);
   let imported = 0;
   for (let i = 0; i < chapters.length && i < TOTAL_CHAPTERS; i++) {
     const chText = chapters[i];
